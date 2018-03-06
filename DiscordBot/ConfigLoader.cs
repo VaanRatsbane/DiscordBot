@@ -50,6 +50,9 @@ namespace DiscordBot
 
             if (!flags.ContainsKey("debug"))
                 flags["debug"] = true;
+
+            if (!flags.ContainsKey("filelog"))
+                flags["filelog"] = true;
         }
 
         public void Kill()
@@ -158,7 +161,7 @@ namespace DiscordBot
         /// <returns>The <c>string</c> value if it exists, <c>null</c> if otherwise.</returns>
         public string GetValue(string valueType)
         {
-            return values[valueType];
+            return values.ContainsKey(valueType) ? values[valueType] : null;
         }
 
         /// <summary>
@@ -224,6 +227,11 @@ namespace DiscordBot
         public bool Debug()
         {
             return flags["debug"];
+        }
+
+        public bool FileLogging()
+        {
+            return flags["filelog"];
         }
 
     }

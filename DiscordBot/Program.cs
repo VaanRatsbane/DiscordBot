@@ -1,4 +1,5 @@
 ﻿using DiscordBot.Modules;
+using DiscordBot.Modules.Classes;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
@@ -20,9 +21,12 @@ namespace DiscordBot
         public static DiscordClient _discord;
         public static CommandsNextModule _commands;
         public static InteractivityModule _interactivity;
+
         public static Keys keys;
         public static ConfigLoader cfg;
         public static ModuleManager moduleManager;
+        public static InviteRoles inviteRoles;
+        public static AutoPrune autoPrune;
 
         public static CancellationTokenSource quitToken;
 
@@ -34,26 +38,13 @@ namespace DiscordBot
         static async Task MainAsync(string[] args)
         {
             Log.Info("Booting...");
-
-            killables = new List<Killable>();
-
-            //Always load config first
-            cfg = new ConfigLoader();
-            killables.Add(cfg);
-
-            //And keys second
-            keys = new Keys();
-            killables.Add(keys);
-            var token = keys.GetKey("discord");
-
-            //Load modules
-            moduleManager = new ModuleManager();
-            killables.Add(moduleManager);
+            
+            Load(); //Load files
 
             //Discord Client
             _discord = new DiscordClient(new DiscordConfiguration
             {
-                Token = token,
+                Token = keys.GetKey("discord"),
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug
@@ -76,18 +67,35 @@ namespace DiscordBot
 
             RegisterCommands();
 
+            //Events
+            _discord.PresenceUpdated += _discord_PresenceUpdated;
+            _discord.GuildMemberAdded += _discord_GuildMemberAdded;
+            _discord.GuildRoleDeleted += _discord_GuildRoleDeleted;
+            _discord.ChannelDeleted += _discord_ChannelDeleted;
+
             await _discord.ConnectAsync();
-            
-            //Log channel registry
+
+            //Log channel registry and InviteRoles/AutoPrune Init
             {
                 var guildText = cfg.GetValue("guild");
                 var logchannelText = cfg.GetValue("logchannel");
                 ulong guild, logchannel;
+                if (guildText != null && ulong.TryParse(guildText, out guild))
+                {
+                    var guildObj = await _discord.GetGuildAsync(guild);
 
-                if (guildText != null && logchannelText != null && ulong.TryParse(guildText, out guild) && ulong.TryParse(logchannelText, out logchannel))
-                    Log.SetLogChannel((await _discord.GetGuildAsync(guild)).GetChannel(logchannel));
-                else
-                    Log.Warning("Couldn't load logchannel settings.");
+                    inviteRoles.Initialize(await guildObj.GetInvitesAsync()); //take advantage of having guild obj
+                    var members = await guildObj.GetAllMembersAsync();
+                    if (members.Count == 0)
+                        Log.Warning("0 members in GetAllMembersAsync");
+                    else
+                        autoPrune.Initialize(members);
+
+                    if (logchannelText != null && ulong.TryParse(logchannelText, out logchannel))
+                        Log.SetLogChannel(guildObj.GetChannel(logchannel));
+                    else
+                        Log.Warning("Couldn't load logchannel settings.");
+                }
             }
 
             quitToken = new CancellationTokenSource();
@@ -102,6 +110,60 @@ namespace DiscordBot
             Log.Info("Closing...");
 
             await _discord.DisconnectAsync();
+        }
+
+        private static Task _discord_ChannelDeleted(DSharpPlus.EventArgs.ChannelDeleteEventArgs e)
+        {
+            inviteRoles.RemoveChannel(e.Channel.Id);
+            return Task.CompletedTask;
+        }
+
+        private static Task _discord_GuildRoleDeleted(DSharpPlus.EventArgs.GuildRoleDeleteEventArgs e)
+        {
+            inviteRoles.RemoveRole(e.Role.Id);
+            return Task.CompletedTask;
+        }
+
+        private static async Task _discord_GuildMemberAdded(DSharpPlus.EventArgs.GuildMemberAddEventArgs e)
+        {
+            var invites = await e.Guild.GetInvitesAsync();
+            var roleID = inviteRoles.UpdateUsages(invites);
+            if (roleID != 0)
+            {
+                var role = e.Guild.GetRole(roleID);
+                await e.Member.GrantRoleAsync(role, "Auto assigned by bot.");
+            }
+        }
+
+        private static Task _discord_PresenceUpdated(DSharpPlus.EventArgs.PresenceUpdateEventArgs e)
+        {
+            autoPrune.Logged(e.Member.Id);
+            return Task.CompletedTask;
+        }
+
+        private static void Load()
+        {
+            killables = new List<Killable>();
+
+            //Always load config first
+            cfg = new ConfigLoader();
+            killables.Add(cfg);
+
+            //And keys second
+            keys = new Keys();
+            killables.Add(keys);
+
+            //Load modules
+            moduleManager = new ModuleManager();
+            killables.Add(moduleManager);
+
+            //Load invite role links
+            inviteRoles = new InviteRoles();
+            killables.Add(inviteRoles);
+
+            //Auto Pruning
+            autoPrune = new AutoPrune();
+            killables.Add(autoPrune);
         }
 
         private static void RegisterCommands()

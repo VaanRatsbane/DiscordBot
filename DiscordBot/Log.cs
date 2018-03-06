@@ -64,15 +64,16 @@ namespace DiscordBot
             if (_logChannel != null)
                 _logChannel.SendMessageAsync(text);
 
-            var now = DateTime.Now;
-            var path = LOGPATH + now.Year + "\\" + now.Month;
-            if (!Directory.Exists(path))
+            if (Program.cfg != null && Program.cfg.FileLogging())
             {
-                Directory.CreateDirectory(path);
+                var now = DateTime.Now;
+                var path = LOGPATH + now.Year + "\\" + now.Month;
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                File.AppendAllText(path + "\\" + now.Day + ".txt", datedText + "\n");
             }
-
-            File.AppendAllText(path + "\\" + now.Day + ".txt", datedText);
-
         }
 
         public static FileStream GetLogFile(int year, int month, int day)
