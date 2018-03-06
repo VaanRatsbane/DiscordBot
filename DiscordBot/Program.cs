@@ -48,7 +48,9 @@ namespace DiscordBot
 
             //Load modules
             moduleManager = new ModuleManager();
+            killables.Add(moduleManager);
 
+            //Discord Client
             _discord = new DiscordClient(new DiscordConfiguration
             {
                 Token = token,
@@ -56,10 +58,17 @@ namespace DiscordBot
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug
             });
-            _commands = _discord.UseCommandsNext(new CommandsNextConfiguration
+
+            //CommandsNext
             {
-                StringPrefix = "$"
-            });
+                var prefix = cfg.GetValue("prefix");
+                _commands = _discord.UseCommandsNext(new CommandsNextConfiguration
+                {
+                    StringPrefix = prefix != null ? prefix : "!"
+                });
+            }
+
+            //Interactivity
             _interactivity = _discord.UseInteractivity(new InteractivityConfiguration()
             {
                 
@@ -68,8 +77,18 @@ namespace DiscordBot
             RegisterCommands();
 
             await _discord.ConnectAsync();
+            
+            //Log channel registry
+            {
+                var guildText = cfg.GetValue("guild");
+                var logchannelText = cfg.GetValue("logchannel");
+                ulong guild, logchannel;
 
-            Log.SetLogChannel((await _discord.GetGuildAsync(222498451752091650)).GetChannel(420209782654500874));
+                if (guildText != null && logchannelText != null && ulong.TryParse(guildText, out guild) && ulong.TryParse(logchannelText, out logchannel))
+                    Log.SetLogChannel((await _discord.GetGuildAsync(guild)).GetChannel(logchannel));
+                else
+                    Log.Warning("Couldn't load logchannel settings.");
+            }
 
             quitToken = new CancellationTokenSource();
 
@@ -87,8 +106,9 @@ namespace DiscordBot
 
         private static void RegisterCommands()
         {
-            _commands.RegisterCommands<BotControlModule>();
-            _commands.RegisterCommands<MathModule>();
+            _commands.RegisterCommands<BotControlModule>(); //botcontrol always loaded
+            if(moduleManager.ModuleState("math")) _commands.RegisterCommands<MathModule>();
+            if (moduleManager.ModuleState("admin")) _commands.RegisterCommands<AdminModule>();
         }
 
         private static async Task TaskDelay(CancellationToken token)
@@ -100,7 +120,13 @@ namespace DiscordBot
                     await Task.Delay(1000, token);
                 }
             }
-            catch { }
+            catch (TaskCanceledException) { } //caught when token is cancelled remotely, here to prevent crash
+            catch(Exception e) //if a different exception happens, then it's time to worry
+            {
+                Log.Error("Task cancellation dun goofd");
+                if (cfg.Debug())
+                    Log.Error(e.ToString());
+            }
         }
 
     }

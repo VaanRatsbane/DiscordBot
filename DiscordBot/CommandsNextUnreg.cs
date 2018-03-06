@@ -5,9 +5,14 @@ using DSharpPlus.CommandsNext;
 namespace DiscordBot
 {
 
-    public static class CommandsNextExtensionExtensions
+    public static class CommandsNextExtensions
     {
 
+        /// <summary>
+        /// Unregisters a module from the available commands list. Courtesy of _moonPtr#8058 @disc
+        /// </summary>
+        /// <typeparam name="T">The module to unload</typeparam>
+        /// <param name="cnext">The commandsnextmodule which will be extended with this method</param>
         public static void UnregisterCommands<T>(this CommandsNextModule cnext) where T : class
         {
             // Command Dictionary Property

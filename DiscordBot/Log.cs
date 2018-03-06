@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
+using System.IO.Compression;
 
 namespace DiscordBot
 {
@@ -10,6 +12,7 @@ namespace DiscordBot
 
         private static readonly object ConsoleWriterLock = new object();
         private static DiscordChannel _logChannel;
+        const string LOGPATH = "Files\\Logs\\";
 
         const ConsoleColor successColor = ConsoleColor.Green;
         const ConsoleColor infoColor = ConsoleColor.White;
@@ -49,15 +52,74 @@ namespace DiscordBot
 
         private static void Print(string text, ConsoleColor color)
         {
+
+            var datedText = "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "] " + text;
             lock (ConsoleWriterLock)
             {
                 Console.ForegroundColor = color;
-                Console.WriteLine("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "] " + text);
+                Console.WriteLine(datedText);
                 Console.ForegroundColor = infoColor;
             }
 
-            if(_logChannel != null)
+            if (_logChannel != null)
                 _logChannel.SendMessageAsync(text);
+
+            var now = DateTime.Now;
+            var path = LOGPATH + now.Year + "\\" + now.Month;
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            File.AppendAllText(path + "\\" + now.Day + ".txt", datedText);
+
+        }
+
+        public static FileStream GetLogFile(int year, int month, int day)
+        {
+            var filepath = LOGPATH + year + "\\" + month + "\\" + day + ".txt";
+            if (File.Exists(filepath))
+                return new FileStream(filepath, FileMode.Open);
+            else
+                return null;
+        }
+
+        public static FileStream GetLogZip(int year, int month)
+        {
+            try
+            {
+                string dirpath;
+                if (month != -1)
+                    dirpath = LOGPATH + year + "\\" + month;
+                else
+                    dirpath = LOGPATH + year;
+
+                if (Directory.Exists(dirpath))
+                {
+                    var zipfilepath = Path.GetTempPath() + "VaanDiscordBot\\";
+                    var filepath = "LOG -" + year + (month != -1 ? "-" + month : "") + ".zip";
+
+                    if (!Directory.Exists(zipfilepath))
+                        Directory.CreateDirectory(zipfilepath);
+
+                    ZipFile.CreateFromDirectory(dirpath, zipfilepath+filepath);
+                    return new FileStream(zipfilepath+filepath, FileMode.Open);
+                }
+                else
+                    return null;
+            }
+            catch(Exception e)
+            {
+                Log.Warning("Failed to get log zip.");
+                if (Program.cfg.Debug())
+                    Log.Warning(e.ToString());
+                return null;
+            }
+        }
+
+        public static void CleanTempZip()
+        {
+            Directory.Delete(Path.GetTempPath() + "VaanDiscordBot", true);
         }
 
     }
