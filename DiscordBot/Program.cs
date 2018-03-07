@@ -72,6 +72,7 @@ namespace DiscordBot
             _discord.GuildMemberAdded += _discord_GuildMemberAdded;
             _discord.GuildRoleDeleted += _discord_GuildRoleDeleted;
             _discord.ChannelDeleted += _discord_ChannelDeleted;
+            _discord.GuildAvailable += _discord_GuildAvailable;
 
             await _discord.ConnectAsync();
 
@@ -85,12 +86,7 @@ namespace DiscordBot
                     var guildObj = await _discord.GetGuildAsync(guild);
 
                     inviteRoles.Initialize(await guildObj.GetInvitesAsync()); //take advantage of having guild obj
-                    var members = await guildObj.GetAllMembersAsync();
-                    if (members.Count == 0)
-                        Log.Warning("0 members in GetAllMembersAsync");
-                    else
-                        autoPrune.Initialize(members);
-
+                    
                     if (logchannelText != null && ulong.TryParse(logchannelText, out logchannel))
                         Log.SetLogChannel(guildObj.GetChannel(logchannel));
                     else
@@ -110,6 +106,20 @@ namespace DiscordBot
             Log.Info("Closing...");
 
             await _discord.DisconnectAsync();
+        }
+
+        private static async Task _discord_GuildAvailable(DSharpPlus.EventArgs.GuildCreateEventArgs e)
+        {
+            var guildText = cfg.GetValue("guild");
+            ulong guild;
+            if (guildText != null && ulong.TryParse(guildText, out guild) && e.Guild.Id == guild)
+            {
+                var members = await e.Guild.GetAllMembersAsync();
+                if (members.Count == 0)
+                    Log.Warning("0 members in GetAllMembersAsync");
+                else
+                    autoPrune.Initialize(members);
+            }
         }
 
         private static Task _discord_ChannelDeleted(DSharpPlus.EventArgs.ChannelDeleteEventArgs e)

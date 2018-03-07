@@ -64,10 +64,8 @@ namespace DiscordBot.Modules.Classes
         public void Initialize(IReadOnlyCollection<DiscordMember> members)
         {
             foreach (var m in members)
-            {
-                if (lastLogins.ContainsKey(m.Id) && m.Presence.Status != UserStatus.Offline)
+                if (m.Presence != null && m.Presence.Status != UserStatus.Offline)
                     lastLogins[m.Id] = DateTime.Now;
-            }
             
             timer.Start();
         }
