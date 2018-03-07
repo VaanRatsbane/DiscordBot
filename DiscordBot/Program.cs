@@ -2,6 +2,7 @@
 using DiscordBot.Modules.Classes;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace DiscordBot
         public static ModuleManager moduleManager;
         public static InviteRoles inviteRoles;
         public static AutoPrune autoPrune;
+        public static Softbans softbans;
 
         public static CancellationTokenSource quitToken;
 
@@ -120,6 +122,8 @@ namespace DiscordBot
                 else
                     autoPrune.Initialize(members);
             }
+
+            softbans.SolvePardons();
         }
 
         private static Task _discord_ChannelDeleted(DSharpPlus.EventArgs.ChannelDeleteEventArgs e)
@@ -136,12 +140,21 @@ namespace DiscordBot
 
         private static async Task _discord_GuildMemberAdded(DSharpPlus.EventArgs.GuildMemberAddEventArgs e)
         {
-            var invites = await e.Guild.GetInvitesAsync();
-            var roleID = inviteRoles.UpdateUsages(invites);
-            if (roleID != 0)
+            var ban = softbans.GetBan(e.Member);
+            if (ban != null)
             {
-                var role = e.Guild.GetRole(roleID);
-                await e.Member.GrantRoleAsync(role, "Auto assigned by bot.");
+                var softbanRole = e.Guild.GetRole(ulong.Parse(cfg.GetValue("softbanrole")));
+                await e.Member.ReplaceRolesAsync(new List<DiscordRole>() { softbanRole }, "Rejoined while still softbanned, to the woodshed with thee!");
+            }
+            else
+            {
+                var invites = await e.Guild.GetInvitesAsync();
+                var roleID = inviteRoles.UpdateUsages(invites);
+                if (roleID != 0)
+                {
+                    var role = e.Guild.GetRole(roleID);
+                    await e.Member.GrantRoleAsync(role, "Auto assigned by bot.");
+                }
             }
         }
 
