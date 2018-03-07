@@ -21,6 +21,7 @@ namespace DiscordBot
             modules = new List<string>();
             modules.Add("math");
             modules.Add("admin");
+            modules.Add("chat");
 
             try
             {
@@ -118,6 +119,10 @@ namespace DiscordBot
                     Program._commands.RegisterCommands<AdminModule>();
                     break;
 
+                case "chat":
+                    Program._commands.RegisterCommands<ChatModule>();
+                    break;
+
                 default: break;
             }
         }
@@ -130,8 +135,8 @@ namespace DiscordBot
                     Program._commands.UnregisterCommands<MathModule>();
                     break;
 
-                case "admin":
-                    Program._commands.UnregisterCommands<AdminModule>();
+                case "chat":
+                    Program._commands.UnregisterCommands<ChatModule>();
                     break;
 
                 default: break;

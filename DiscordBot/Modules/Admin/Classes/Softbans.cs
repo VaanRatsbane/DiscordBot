@@ -55,7 +55,7 @@ namespace DiscordBot.Modules.Classes
 
         private async void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            var guildText = Program.cfg.GetValue("discord");
+            var guildText = Program.cfg.GetValue("guild");
             var guild = ulong.Parse(guildText);
             var guildObj = await Program._discord.GetGuildAsync(guild);
             var member = await guildObj.GetMemberAsync(nextUnbanID);
@@ -75,7 +75,7 @@ namespace DiscordBot.Modules.Classes
         public async void SolvePardons()
         {
             unbanTimer.Stop();
-            var guildText = Program.cfg.GetValue("discord");
+            var guildText = Program.cfg.GetValue("guild");
             var guild = ulong.Parse(guildText);
             var guildObj = await Program._discord.GetGuildAsync(guild);
             foreach(var pair in softbans)

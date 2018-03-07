@@ -219,8 +219,16 @@ namespace DiscordBot.Modules
                 foreach(var pair in list)
                 {
                     var member = await ctx.Guild.GetMemberAsync(pair.Value);
-                    response += $"({member.DisplayName}) | {member.Username}#{member.Discriminator} - Expires: " +
+                    string piece = $"({member.DisplayName}) | {member.Username}#{member.Discriminator} - Expires: " +
                         ((pair.Key == default(DateTime)) ? "NEVER" : pair.Key.ToString("yyyy-MM-dd HH:mm:ss")) + "\n";
+
+                    if ((response + piece).Length > 2000)
+                    {
+                        await ctx.RespondAsync(response);
+                        response = piece;
+                    }
+                    else
+                        response += piece;
                 }
                 await ctx.RespondAsync(response);
             }

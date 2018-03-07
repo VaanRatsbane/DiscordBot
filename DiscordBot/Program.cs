@@ -29,6 +29,7 @@ namespace DiscordBot
         public static InviteRoles inviteRoles;
         public static AutoPrune autoPrune;
         public static Softbans softbans;
+        public static Quotes quotes;
 
         public static CancellationTokenSource quitToken;
 
@@ -187,6 +188,14 @@ namespace DiscordBot
             //Auto Pruning
             autoPrune = new AutoPrune();
             killables.Add(autoPrune);
+
+            //Softbans
+            softbans = new Softbans();
+            killables.Add(softbans);
+
+            //Quotes
+            quotes = new Quotes();
+            killables.Add(quotes);
         }
 
         private static void RegisterCommands()
@@ -194,6 +203,7 @@ namespace DiscordBot
             _commands.RegisterCommands<BotControlModule>(); //botcontrol always loaded
             if(moduleManager.ModuleState("math")) _commands.RegisterCommands<MathModule>();
             if (moduleManager.ModuleState("admin")) _commands.RegisterCommands<AdminModule>();
+            if (moduleManager.ModuleState("chat")) _commands.RegisterCommands<ChatModule>();
         }
 
         private static async Task TaskDelay(CancellationToken token)
