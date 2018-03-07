@@ -73,5 +73,97 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("🤷");
         }
 
+        [Command("choose"), Description("Choose from a list of things.")]
+        public async Task Choose(CommandContext ctx, [Description("The list of choices, seperated by spaces. Multi worded choices delimited by quotes.")]params string[] choices)
+        {
+            await ctx.RespondAsync(choices[Program.rng.Next(choices.Length)]);
+        }
+
+        [Command("8ball"), Description("Ask me a question with a yes or no answer, and I shall tell you the secrets of the universe...")]
+        public async Task EightBall(CommandContext ctx, [RemainingText]string query)
+        {
+            query = query.ToLowerInvariant(); //standardize answer
+            int value = 0;
+            foreach (var c in query)
+                value += c;
+            string answer;
+            switch(value % 3)
+            {
+                case 0:
+                    answer = "Yes.";
+                    break;
+                case 1:
+                    answer = "No.";
+                    break;
+                case 2:
+                    answer = "Maybe.";
+                    break;
+                default:
+                    answer = "I... I do not know. What madness is this?!";
+                    break;
+            }
+            await ctx.RespondAsync(answer);
+        }
+
+        [Command("bspeak"), Aliases("b"), Description("Speak like a true rudda.")]
+        public async Task BSpeak(CommandContext ctx, [RemainingText]string text)
+        {
+            string result = "";
+            foreach(var c in text.ToLowerInvariant())
+            {
+                if (c >= 97 && c <= 122)
+                {
+                    if (c == 98)
+                        result += "🅱";
+                    else
+                        result += $":regional_indicator_{c}:";
+                }
+                else if (c >= 48 && c <= 57)
+                {
+                    switch (c)
+                    {
+                        case '0':
+                            result += ":zero:";
+                            break;
+                        case '1':
+                            result += ":one:";
+                            break;
+                        case '2':
+                            result += ":two:";
+                            break;
+                        case '3':
+                            result += ":three:";
+                            break;
+                        case '4':
+                            result += ":four:";
+                            break;
+                        case '5':
+                            result += ":five:";
+                            break;
+                        case '6':
+                            result += ":six:";
+                            break;
+                        case '7':
+                            result += ":seven:";
+                            break;
+                        case '8':
+                            result += ":eight:";
+                            break;
+                        case '9':
+                            result += ":nine:";
+                            break;
+                        default: break;
+                    }
+                }
+                else
+                    result += c;
+
+                if (result.Length > 2000)
+                    return;
+            }
+
+            await ctx.RespondAsync(result);
+        }
+
     }
 }

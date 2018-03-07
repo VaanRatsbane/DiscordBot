@@ -31,6 +31,8 @@ namespace DiscordBot
         public static Softbans softbans;
         public static Quotes quotes;
 
+        public static Random rng;
+
         public static CancellationTokenSource quitToken;
 
         static void Main(string[] args)
@@ -77,20 +79,22 @@ namespace DiscordBot
             _discord.ChannelDeleted += _discord_ChannelDeleted;
             _discord.GuildAvailable += _discord_GuildAvailable;
 
+            rng = new Random();
+
             await _discord.ConnectAsync();
 
             //Log channel registry and InviteRoles/AutoPrune Init
             {
                 var guildText = cfg.GetValue("guild");
                 var logchannelText = cfg.GetValue("logchannel");
-                ulong guild, logchannel;
-                if (guildText != null && ulong.TryParse(guildText, out guild))
+
+                if (guildText != null && ulong.TryParse(guildText, out ulong guild))
                 {
                     var guildObj = await _discord.GetGuildAsync(guild);
 
                     inviteRoles.Initialize(await guildObj.GetInvitesAsync()); //take advantage of having guild obj
                     
-                    if (logchannelText != null && ulong.TryParse(logchannelText, out logchannel))
+                    if (logchannelText != null && ulong.TryParse(logchannelText, out ulong logchannel))
                         Log.SetLogChannel(guildObj.GetChannel(logchannel));
                     else
                         Log.Warning("Couldn't load logchannel settings.");
@@ -114,8 +118,7 @@ namespace DiscordBot
         private static async Task _discord_GuildAvailable(DSharpPlus.EventArgs.GuildCreateEventArgs e)
         {
             var guildText = cfg.GetValue("guild");
-            ulong guild;
-            if (guildText != null && ulong.TryParse(guildText, out guild) && e.Guild.Id == guild)
+            if (guildText != null && ulong.TryParse(guildText, out ulong guild) && e.Guild.Id == guild)
             {
                 var members = await e.Guild.GetAllMembersAsync();
                 if (members.Count == 0)
@@ -204,6 +207,7 @@ namespace DiscordBot
             if(moduleManager.ModuleState("math")) _commands.RegisterCommands<MathModule>();
             if (moduleManager.ModuleState("admin")) _commands.RegisterCommands<AdminModule>();
             if (moduleManager.ModuleState("chat")) _commands.RegisterCommands<ChatModule>();
+            if (moduleManager.ModuleState("info")) _commands.RegisterCommands<InfoModule>();
         }
 
         private static async Task TaskDelay(CancellationToken token)

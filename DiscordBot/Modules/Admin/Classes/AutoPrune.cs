@@ -37,6 +37,9 @@ namespace DiscordBot.Modules.Classes
             catch(Exception e)
             {
                 lastLogins = new ConcurrentDictionary<ulong, DateTime>();
+                Log.Warning("Couldn't load lastLogins.");
+                if (Program.cfg.Debug())
+                    Log.Warning(e.ToString());
             }
         }
 

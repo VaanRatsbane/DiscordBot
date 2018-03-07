@@ -13,11 +13,9 @@ namespace DiscordBot.Modules.Classes
         const string QUOTE_FILE = "Files\\Chat\\quotes.json";
 
         Data data;
-        Random random;
 
         public Quotes()
         {
-            random = new Random();
 
             if (!Directory.Exists("Files\\Chat"))
                 Directory.CreateDirectory("Files\\Chat");
@@ -67,7 +65,7 @@ namespace DiscordBot.Modules.Classes
 
         public Quote RandomQuote()
         {
-            return data.ids.Count == 0 ? null : data.quotes[random.Next(data.ids.Count)];
+            return data.ids.Count == 0 ? null : data.quotes[Program.rng.Next(data.ids.Count)];
         }
 
         public bool RemoveQuote(ulong id)
