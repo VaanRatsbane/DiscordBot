@@ -35,6 +35,8 @@ namespace DiscordBot
 
         public static CancellationTokenSource quitToken;
 
+        private static System.Timers.Timer saveTimer;
+
         static void Main(string[] args)
         {
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -51,8 +53,7 @@ namespace DiscordBot
             {
                 Token = keys.GetKey("discord"),
                 TokenType = TokenType.Bot,
-                UseInternalLogHandler = true,
-                LogLevel = LogLevel.Debug
+                UseInternalLogHandler = true
             });
 
             //CommandsNext
@@ -103,16 +104,25 @@ namespace DiscordBot
 
             quitToken = new CancellationTokenSource();
 
+            saveTimer = new System.Timers.Timer();
+            saveTimer.Interval = 3600000; //save every hour
+            saveTimer.AutoReset = true;
+            saveTimer.Elapsed += SaveTimer_Elapsed;
+            saveTimer.Start();
+
             Log.Info("Fully loaded.");
             await TaskDelay(quitToken.Token);
 
-            //kill 'em all
-            foreach (var ded in killables)
-                ded.Kill();
+            Save(true);
 
             Log.Info("Closing...");
 
             await _discord.DisconnectAsync();
+        }
+
+        private static void SaveTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Save(false);
         }
 
         private static async Task _discord_GuildAvailable(DSharpPlus.EventArgs.GuildCreateEventArgs e)
@@ -199,6 +209,16 @@ namespace DiscordBot
             //Quotes
             quotes = new Quotes();
             killables.Add(quotes);
+        }
+
+        private static void Save(bool finalSave)
+        {
+            //kill 'em all
+            foreach (var ded in killables)
+                ded.Kill();
+
+            if (finalSave)
+                saveTimer.Stop();
         }
 
         private static void RegisterCommands()
