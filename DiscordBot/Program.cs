@@ -139,6 +139,7 @@ namespace DiscordBot
             }
 
             softbans.SolvePardons();
+            HelpEmbeds.Initialize(); //Setup help embeds
         }
 
         private static Task _discord_ChannelDeleted(DSharpPlus.EventArgs.ChannelDeleteEventArgs e)
@@ -230,6 +231,7 @@ namespace DiscordBot
             if (moduleManager.ModuleState("admin")) _commands.RegisterCommands<AdminModule>();
             if (moduleManager.ModuleState("chat")) _commands.RegisterCommands<ChatModule>();
             if (moduleManager.ModuleState("info")) _commands.RegisterCommands<InfoModule>();
+            if (moduleManager.ModuleState("api")) _commands.RegisterCommands<APIModule>();
         }
 
         private static async Task TaskDelay(CancellationToken token)

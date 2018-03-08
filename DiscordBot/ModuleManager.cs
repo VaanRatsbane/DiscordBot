@@ -23,6 +23,7 @@ namespace DiscordBot
             modules.Add("admin");
             modules.Add("chat");
             modules.Add("info");
+            modules.Add("api");
 
             try
             {
@@ -128,6 +129,10 @@ namespace DiscordBot
                     Program._commands.RegisterCommands<InfoModule>();
                     break;
 
+                case "api":
+                    Program._commands.RegisterCommands<APIModule>();
+                    break;
+
                 default: break;
             }
         }
@@ -150,6 +155,10 @@ namespace DiscordBot
 
                 case "info":
                     Program._commands.UnregisterCommands<InfoModule>();
+                    break;
+
+                case "api":
+                    Program._commands.UnregisterCommands<APIModule>();
                     break;
 
                 default: break;

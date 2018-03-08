@@ -22,6 +22,12 @@ namespace DiscordBot.Modules
             await ctx.RespondAsync(embed: HelpEmbeds.admin);
         }
 
+        [Command("api")]
+        public async Task API(CommandContext ctx)
+        {
+            await ctx.RespondAsync(embed: HelpEmbeds.api);
+        }
+
         [Command("bot")]
         public async Task Bot(CommandContext ctx)
         {
@@ -38,6 +44,12 @@ namespace DiscordBot.Modules
         public async Task Info(CommandContext ctx)
         {
             await ctx.RespondAsync(embed: HelpEmbeds.info);
+        }
+
+        [Command("math")]
+        public async Task Math(CommandContext ctx)
+        {
+            await ctx.RespondAsync(embed: HelpEmbeds.math);
         }
 
 

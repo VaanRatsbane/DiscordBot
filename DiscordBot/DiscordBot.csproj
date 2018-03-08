@@ -7,11 +7,18 @@
 
   <ItemGroup>
     <PackageReference Include="CoreCLR-NCalc" Version="2.1.3" />
+    <PackageReference Include="DarkSkyApi" Version="3.3.0" />
     <PackageReference Include="DSharpPlus" Version="3.2.3" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="3.2.3" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="3.2.3" />
     <PackageReference Include="DSharpPlus.VoiceNext" Version="3.2.3" />
+    <PackageReference Include="Geocoding.Core" Version="4.0.1" />
+    <PackageReference Include="Geocoding.Google" Version="4.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Modules\API\Classes\" />
   </ItemGroup>
 
 </Project>

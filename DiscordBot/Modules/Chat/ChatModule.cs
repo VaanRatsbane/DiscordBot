@@ -162,6 +162,7 @@ namespace DiscordBot.Modules
             }
 
             await ctx.RespondAsync(result);
+            await ctx.Message.DeleteAsync();
         }
 
     }

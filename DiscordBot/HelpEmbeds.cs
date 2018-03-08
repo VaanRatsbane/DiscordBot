@@ -8,7 +8,7 @@ namespace DiscordBot
     class HelpEmbeds
     {
 
-        public static DiscordEmbed help, admin, bot, chat, info;
+        public static DiscordEmbed help, admin, bot, chat, info, api, math;
 
         public static void Initialize()
         {
@@ -20,6 +20,8 @@ namespace DiscordBot
             BuildBot(authorName, authorIcon);
             BuildChat(authorName, authorIcon);
             BuildInfo(authorName, authorIcon);
+            BuildAPI(authorName, authorIcon);
+            BuildMath(authorName, authorIcon);
         }
 
         private static void BuildHelp(string authorName, string authorIcon)
@@ -29,8 +31,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.PhthaloBlue)
                 .WithTitle("Command groups.")
                 .WithDescription("Use !help < group > to see the available commands.")
-                .AddField("Commands", "dumplog, inviterolelink, removerolelink, prune, " +
-                "softban, pardon, pardonroles, listsoftbans, wipe");
+                .AddField("Groups", "admin, api, bot, chat, help, info, math");
         }
 
         private static void BuildAdmin(string authorName, string authorIcon)
@@ -58,7 +59,7 @@ namespace DiscordBot
 
         private static void BuildChat(string authorName, string authorIcon)
         {
-            bot = new DiscordEmbedBuilder()
+            chat = new DiscordEmbedBuilder()
                 .WithAuthor(authorName, null, authorIcon)
                 .WithColor(DiscordColor.Yellow)
                 .WithTitle("Fun chat shenanigans.")
@@ -68,12 +69,32 @@ namespace DiscordBot
 
         private static void BuildInfo(string authorName, string authorIcon)
         {
-            bot = new DiscordEmbedBuilder()
+            info = new DiscordEmbedBuilder()
                 .WithAuthor(authorName, null, authorIcon)
                 .WithColor(DiscordColor.Teal)
                 .WithTitle("Get information on various subjects.")
                 .WithDescription("Use !help < command > to learn more.")
                 .AddField("Commands", "about, status");
+        }
+
+        private static void BuildAPI(string authorName, string authorIcon)
+        {
+            api = new DiscordEmbedBuilder()
+                .WithAuthor(authorName, null, authorIcon)
+                .WithColor(DiscordColor.Cyan)
+                .WithTitle("Commands to poll information from the internet.")
+                .WithDescription("Use !help < command > to learn more.")
+                .AddField("Commands", "weather");
+        }
+
+        private static void BuildMath(string authorName, string authorIcon)
+        {
+            math = new DiscordEmbedBuilder()
+                .WithAuthor(authorName, null, authorIcon)
+                .WithColor(DiscordColor.Wheat)
+                .WithTitle("Do your homework.")
+                .WithDescription("Use !help < command > to learn more.")
+                .AddField("Commands", "calc, rolldice");
         }
 
     }
