@@ -13,11 +13,10 @@ namespace DiscordBot.Modules
     /// <summary>
     /// If you can kick members, you are an "admin" (rather not give admin role away since it can be superseeded, and keep it on the bot)
     /// </summary>
-    [Group("admin"), Aliases("ad"), Description("Administrative commands."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
     class AdminModule
     {
 
-        [Command("dumplog"), Description("Dumps a specific log file. Leave value at -1 for current.")]
+        [Command("dumplog"), Description("Dumps a specific log file. Leave value at -1 for current."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task DumpLog(CommandContext ctx, int year = -1, int month = -1, int day = -1)
         {
             var now = DateTime.Now;
@@ -49,7 +48,7 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("inviterolelink"), Description("Associates a channel invite to an automatic role attribution. Run in the channel that generated such invite.")]
+        [Command("inviterolelink"), Description("Associates a channel invite to an automatic role attribution. Run in the channel that generated such invite."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task InviteToRoleLink(CommandContext ctx, DiscordRole role)
         {
             if(Program.inviteRoles.HasChannel(ctx.Channel.Id))
@@ -63,7 +62,7 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("removerolelink"), Description("Removes a channel invite role association. Run in the channel that generated such invite.")]
+        [Command("removerolelink"), Description("Removes a channel invite role association. Run in the channel that generated such invite."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task RemoveRoleLink(CommandContext ctx)
         {
             if (Program.inviteRoles.RemoveChannel(ctx.Channel.Id))
@@ -72,7 +71,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("This channel has no automatic role assignment associated.");
         }
 
-        [Command("prune"), Description("Prunes the server.")]
+        [Command("prune"), Description("Prunes the server."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task Prune(CommandContext ctx)
         {
             int kicked = await AutoPrune.Prune();
@@ -85,7 +84,7 @@ namespace DiscordBot.Modules
         }
 
         //Not happy with this if else party, should prob do a trycatch and throws
-        [Command("softban"), Description("Softbans a member.")]
+        [Command("softban"), Description("Softbans a member."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task Softban(CommandContext ctx, DiscordMember member,
             [RemainingText, Description("The time limit for the ban. Use 'permanent' or a set of time denotations '#amount# {year/month/day/hour/minute/second}'")]string limit)
         {
@@ -189,7 +188,7 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("pardon"), Description("Pardons a member.")]
+        [Command("pardon"), Description("Pardons a member."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task PardonBan(CommandContext ctx, DiscordMember member)
         {
             if (Program.softbans.Pardon(member))
@@ -198,7 +197,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("That member is not softbanned.");
         }
 
-        [Command("pardonnoroles"), Description("Pardons a member without restoring their roles.")]
+        [Command("pardonnoroles"), Description("Pardons a member without restoring their roles."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task PardonBanNoRoles(CommandContext ctx, DiscordMember member)
         {
             if (Program.softbans.PardonWithNoRoles(member))
@@ -207,7 +206,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("That member is not softbanned.");
         }
 
-        [Command("listsoftbans"), Description("Prints softbans and their time limits.")]
+        [Command("listsoftbans"), Description("Prints softbans and their time limits."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task ListBans(CommandContext ctx)
         {
             var list = Program.softbans.Listing();
@@ -232,6 +231,19 @@ namespace DiscordBot.Modules
                 }
                 await ctx.RespondAsync(response);
             }
+        }
+
+        [Command("wipe"), Description("Wipes a number of messages from the channel."), RequirePermissions(DSharpPlus.Permissions.ManageMessages)]
+        public async Task Wipe(CommandContext ctx, int quantity = 100)
+        {
+            await ctx.Message.DeleteAsync();
+            var msgs = await ctx.Channel.GetMessagesAsync(quantity);
+            if (msgs.Count > 0)
+            {
+                await ctx.Channel.DeleteMessagesAsync(msgs);
+                await ctx.RespondAsync("Wiped " + msgs.Count + " messages.");
+            }
+
         }
 
     }

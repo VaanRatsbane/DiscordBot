@@ -8,11 +8,52 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Modules
 {
-    [Group("botcontrol", CanInvokeWithoutSubcommand = false), Aliases("bc"), Description("Commands that control the bot's behaviour."), RequireOwner]
     class BotControlModule
     {
 
-        [Command("flag"), Description("Check the value of a configuration flag.")]
+        [Command("setnick"), Description("Changes my nickname."), RequirePermissions(DSharpPlus.Permissions.BanMembers)]
+        public async Task SetNick(CommandContext ctx, [Description("The new name I will display."), RemainingText]string nickname)
+        {
+            foreach(var m in ctx.Guild.Members)
+                if(m.Id == ctx.Client.CurrentUser.Id)
+                {
+                    await m.ModifyAsync(nickname: nickname);
+                    break;
+                }
+        }
+
+        [Command("setstate"), Description("Changes my public state."), RequirePermissions(DSharpPlus.Permissions.BanMembers)]
+        public async Task SetState(CommandContext ctx, [Description("The state. Use online, dnd, idle or offline.")]string state)
+        {
+            switch (state.ToLowerInvariant())
+            {
+                case "online":
+                    await ctx.Client.UpdateStatusAsync(user_status: DSharpPlus.Entities.UserStatus.Online);
+                    break;
+
+                case "dnd":
+                    await ctx.Client.UpdateStatusAsync(user_status: DSharpPlus.Entities.UserStatus.DoNotDisturb);
+                    break;
+
+                case "idle":
+                case "away":
+                    await ctx.Client.UpdateStatusAsync(user_status: DSharpPlus.Entities.UserStatus.Idle);
+                    break;
+
+                case "invisible":
+                case "offline":
+                    await ctx.Client.UpdateStatusAsync(user_status: DSharpPlus.Entities.UserStatus.Invisible);
+                    break;
+            }
+        }
+
+        [Command("setgame"), Description("Changes my current game."), RequirePermissions(DSharpPlus.Permissions.BanMembers)]
+        public async Task SetGame(CommandContext ctx, [Description("The game I will be playing.")]string game)
+        {
+            await ctx.Client.UpdateStatusAsync(game : new DSharpPlus.Entities.DiscordGame(game));
+        }
+
+        [Command("flag"), Description("Check the value of a configuration flag."), RequireOwner]
         public async Task Flag(CommandContext ctx, [Description("The flag to check the value of.")]string flag)
         {
             await ctx.TriggerTypingAsync();
@@ -25,7 +66,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("The flag does not exist.");
         }
 
-        [Command("toggleflag"), Description("Toggles the value of an existing flag.")]
+        [Command("toggleflag"), Description("Toggles the value of an existing flag."), RequireOwner]
         public async Task toggleFlag(CommandContext ctx, [Description("The flag whose value to toggle.")]string flag)
         {
             await ctx.TriggerTypingAsync();
@@ -41,7 +82,7 @@ namespace DiscordBot.Modules
                 Log.Info($"{ctx.Member.Username}#{ctx.Member.Discriminator} toggled flag {flag}.");
         }
 
-        [Command("createflag"), Description("Creates a new configuration flag.")]
+        [Command("createflag"), Description("Creates a new configuration flag."), RequireOwner]
         public async Task createFlag(CommandContext ctx, [Description("The flag to create.")]string flag, [Description("The new flag's starting value.")]bool defaultValue)
         {
             await ctx.TriggerTypingAsync();
@@ -54,7 +95,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("Flag already exists.");
         }
 
-        [Command("deleteflag"), Description("Deletes a configuration flag.")]
+        [Command("deleteflag"), Description("Deletes a configuration flag."), RequireOwner]
         public async Task deleteFlag(CommandContext ctx, [Description("The flag to remove.")]string flag)
         {
             await ctx.TriggerTypingAsync();
@@ -76,7 +117,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("Cancelled.");
         }
 
-        [Command("listflags"), Description("Lists all configuration flags.")]
+        [Command("listflags"), Description("Lists all configuration flags."), RequireOwner]
         public async Task listFlags(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
@@ -95,7 +136,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync(printable);
         }
 
-        [Command("setting"), Description("Check the value of a configuration setting.")]
+        [Command("setting"), Description("Check the value of a configuration setting."), RequireOwner]
         public async Task Setting(CommandContext ctx, [Description("The setting to check the value of.")]string setting)
         {
             await ctx.TriggerTypingAsync();
@@ -106,7 +147,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("The setting does not exist.");
         }
 
-        [Command("setsetting"), Description("Sets the value of an existing setting.")]
+        [Command("setsetting"), Description("Sets the value of an existing setting."), RequireOwner]
         public async Task setSetting(CommandContext ctx, [Description("The setting whose value to set.")]string setting, string newValue)
         {
             await ctx.TriggerTypingAsync();
@@ -120,7 +161,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("The setting does not exist.");
         }
 
-        [Command("createsetting"), Description("Creates a new configuration setting.")]
+        [Command("createsetting"), Description("Creates a new configuration setting."), RequireOwner]
         public async Task createSetting(CommandContext ctx, [Description("The setting to create.")]string setting, [Description("The new setting's starting value.")]string defaultValue)
         {
             await ctx.TriggerTypingAsync();
@@ -133,7 +174,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("Flag already exists.");
         }
 
-        [Command("deletesetting"), Description("Deletes a configuration setting.")]
+        [Command("deletesetting"), Description("Deletes a configuration setting."), RequireOwner]
         public async Task deleteSetting(CommandContext ctx, [Description("The setting to remove.")]string setting)
         {
             await ctx.TriggerTypingAsync();
@@ -155,7 +196,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("Cancelled.");
         }
 
-        [Command("listsettings"), Description("Lists all configuration settings.")]
+        [Command("listsettings"), Description("Lists all configuration settings."), RequireOwner]
         public async Task listSettings(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
@@ -174,7 +215,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync(printable);
         }
 
-        [Command("key"), Description("Check the value of an API key.")]
+        [Command("key"), Description("Check the value of an API key."), RequireOwner]
         public async Task Key(CommandContext ctx, [Description("The key to check the value of.")]string key)
         {
             await ctx.TriggerTypingAsync();
@@ -188,7 +229,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("The setting does not exist.");
         }
 
-        [Command("setkey"), Description("Sets the value of an existing API key.")]
+        [Command("setkey"), Description("Sets the value of an existing API key."), RequireOwner]
         public async Task setKey(CommandContext ctx, [Description("The key whose value to set.")]string key, string newValue)
         {
             await ctx.TriggerTypingAsync();
@@ -203,7 +244,7 @@ namespace DiscordBot.Modules
             await ctx.Message.DeleteAsync();
         }
 
-        [Command("createkey"), Description("Creates a new API key.")]
+        [Command("createkey"), Description("Creates a new API key."), RequireOwner]
         public async Task createKey(CommandContext ctx, [Description("The key to create.")]string key, [Description("The new setting's starting value.")]string defaultValue)
         {
             await ctx.TriggerTypingAsync();
@@ -217,7 +258,7 @@ namespace DiscordBot.Modules
             await ctx.Message.DeleteAsync();
         }
 
-        [Command("deletekey"), Description("Deletes an API key.")]
+        [Command("deletekey"), Description("Deletes an API key."), RequireOwner]
         public async Task deleteKey(CommandContext ctx, [Description("The API key to remove.")]string key)
         {
             await ctx.TriggerTypingAsync();
@@ -248,7 +289,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("Cancelled.");
         }
 
-        [Command("listkeys"), Description("Lists all API keys.")]
+        [Command("listkeys"), Description("Lists all API keys."), RequireOwner]
         public async Task listKeys(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
@@ -267,14 +308,14 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync(printable);
         }
 
-        [Command("quit"), Description("Closes the bot.")]
+        [Command("quit"), Description("Closes the bot."), RequireOwner]
         public async Task Quit(CommandContext ctx)
         {
             await ctx.RespondAsync("Byebye!");
             Program.quitToken.Cancel();
         }
 
-        [Command("enablemodule"), Description("Enable the commands of a module.")]
+        [Command("enablemodule"), Description("Enable the commands of a module."), RequireOwner]
         public async Task RegisterModule(CommandContext ctx, string moduleName)
         {
             if (moduleName == "botcontrol")
@@ -297,7 +338,7 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("disablemodule"), Description("Disable the commands of a module.")]
+        [Command("disablemodule"), Description("Disable the commands of a module."), RequireOwner]
         public async Task UnregisterModule(CommandContext ctx, string moduleName)
         {
             if (moduleName == "botcontrol")

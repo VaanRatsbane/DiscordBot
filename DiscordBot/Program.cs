@@ -61,7 +61,8 @@ namespace DiscordBot
                 var prefix = cfg.GetValue("prefix");
                 _commands = _discord.UseCommandsNext(new CommandsNextConfiguration
                 {
-                    StringPrefix = prefix != null ? prefix : "!"
+                    StringPrefix = prefix != null ? prefix : "!",
+                    EnableDefaultHelp = false
                 });
             }
 
@@ -224,6 +225,7 @@ namespace DiscordBot
         private static void RegisterCommands()
         {
             _commands.RegisterCommands<BotControlModule>(); //botcontrol always loaded
+            _commands.RegisterCommands<HelpModule>(); //help always loaded
             if(moduleManager.ModuleState("math")) _commands.RegisterCommands<MathModule>();
             if (moduleManager.ModuleState("admin")) _commands.RegisterCommands<AdminModule>();
             if (moduleManager.ModuleState("chat")) _commands.RegisterCommands<ChatModule>();

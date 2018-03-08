@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Modules
 {
-    [Group("chat"), Description("Fun chat shenanigans.")]
     class ChatModule
     {
 
