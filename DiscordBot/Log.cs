@@ -12,7 +12,7 @@ namespace DiscordBot
 
         private static readonly object ConsoleWriterLock = new object();
         private static DiscordChannel _logChannel;
-        const string LOGPATH = "Files\\Logs\\";
+        const string LOGPATH = "Files/Logs/";
 
         const ConsoleColor successColor = ConsoleColor.Green;
         const ConsoleColor infoColor = ConsoleColor.White;
@@ -67,18 +67,18 @@ namespace DiscordBot
             if (Program.cfg != null && Program.cfg.FileLogging())
             {
                 var now = DateTime.Now;
-                var path = LOGPATH + now.Year + "\\" + now.Month;
+                var path = LOGPATH + now.Year + "/" + now.Month;
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
-                File.AppendAllText(path + "\\" + now.Day + ".txt", datedText + "\n");
+                File.AppendAllLines(path + "/" + now.Day + ".txt", new string[]{datedText + "\n"});
             }
         }
 
         public static FileStream GetLogFile(int year, int month, int day)
         {
-            var filepath = LOGPATH + year + "\\" + month + "\\" + day + ".txt";
+            var filepath = LOGPATH + year + "/" + month + "/" + day + ".txt";
             if (File.Exists(filepath))
                 return new FileStream(filepath, FileMode.Open);
             else
@@ -91,13 +91,13 @@ namespace DiscordBot
             {
                 string dirpath;
                 if (month != -1)
-                    dirpath = LOGPATH + year + "\\" + month;
+                    dirpath = LOGPATH + year + "/" + month;
                 else
                     dirpath = LOGPATH + year;
 
                 if (Directory.Exists(dirpath))
                 {
-                    var zipfilepath = Path.GetTempPath() + "VaanDiscordBot\\";
+                    var zipfilepath = Path.GetTempPath() + "VaanDiscordBot/";
                     var filepath = "LOG -" + year + (month != -1 ? "-" + month : "") + ".zip";
 
                     if (!Directory.Exists(zipfilepath))

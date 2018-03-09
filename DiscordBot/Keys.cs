@@ -13,7 +13,7 @@ namespace DiscordBot
     class Keys : Killable
     {
 
-        private const string KEYS_FILE = "Files\\Meta\\keys.json";
+        private const string KEYS_FILE = "Files/Meta/keys.json";
 
         private ConcurrentDictionary<string, string> keys;
 
@@ -41,11 +41,15 @@ namespace DiscordBot
 
         public void Kill()
         {
+            Save();
+        }
+
+        public void Save()
+        {
             try
             {
                 var json = JsonConvert.SerializeObject(keys, Formatting.Indented);
                 File.WriteAllText(KEYS_FILE, json);
-                Log.Success("Saved API keys.");
             }
             catch (Exception e)
             {

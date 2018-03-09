@@ -53,5 +53,19 @@ namespace DiscordBot.Modules
             await ctx.RespondAsync(embed: embed);
         }
 
+        [Command("server"), Description("Information about this server.")]
+        public async Task Server(CommandContext ctx)
+        {
+            var embed = new DiscordEmbedBuilder()
+                .WithTitle(ctx.Guild.Name)
+                .WithDescription("Information about this server.")
+                .AddField("Created by", ctx.Guild.Owner.DisplayName)
+                .AddField("Created in", ctx.Guild.CreationTimestamp.ToString())
+                .AddField("Region", ctx.Guild.RegionId)
+                .AddField("Users", ctx.Guild.MemberCount.ToString());
+
+            await ctx.RespondAsync(embed: embed);
+        }
+
     }
 }

@@ -19,37 +19,50 @@ namespace DiscordBot.Modules
         [Command("admin")]
         public async Task Admin(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.admin);
         }
 
         [Command("api")]
         public async Task API(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.api);
         }
 
         [Command("bot")]
         public async Task Bot(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.bot);
         }
 
         [Command("chat")]
         public async Task Chat(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.chat);
         }
 
         [Command("info")]
         public async Task Info(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.info);
         }
 
         [Command("math")]
         public async Task Math(CommandContext ctx)
         {
+            await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.math);
+        }
+
+        [Command("tools")]
+        public async Task Tools(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync();
+            var msg = await ctx.RespondAsync(embed: HelpEmbeds.tools);
         }
 
 

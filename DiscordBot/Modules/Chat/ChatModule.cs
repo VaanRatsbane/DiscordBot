@@ -107,6 +107,8 @@ namespace DiscordBot.Modules
         [Command("bspeak"), Aliases("b"), Description("Speak like a true rudda.")]
         public async Task BSpeak(CommandContext ctx, [RemainingText]string text)
         {
+            await ctx.Message.DeleteAsync();
+            await ctx.TriggerTypingAsync();
             string result = "";
             foreach(var c in text.ToLowerInvariant())
             {
@@ -162,7 +164,20 @@ namespace DiscordBot.Modules
             }
 
             await ctx.RespondAsync(result);
+        }
+
+        [Command("echo"), Description("I'll repeat what you say... to the best of my capabilities.")]
+        public async Task Echo(CommandContext ctx, [RemainingText]string message)
+        {
             await ctx.Message.DeleteAsync();
+            await ctx.RespondAsync(message);
+        }
+
+        [Command("dab"), Description("Feels dab man.")]
+        public async Task Dab(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync();
+            await ctx.RespondAsync(":FeelsDabMan:");
         }
 
     }

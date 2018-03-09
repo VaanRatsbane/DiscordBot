@@ -3,6 +3,8 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,6 +53,37 @@ namespace DiscordBot.Modules
         public async Task SetGame(CommandContext ctx, [Description("The game I will be playing.")]string game)
         {
             await ctx.Client.UpdateStatusAsync(game : new DSharpPlus.Entities.DiscordGame(game));
+        }
+
+        [Command("setavatar"), Description("Changes my avatar."), RequireOwner]
+        public async Task SetAvatar(CommandContext ctx)
+        {
+            if (ctx.Message.Attachments != null && ctx.Message.Attachments.Count == 1 && ctx.Message.Attachments[0].Height > 0)
+            {
+                try
+                {
+                    using (var client = new WebClient())
+                    {
+                        client.DownloadFile(ctx.Message.Attachments[0].Url, "tempavatar");
+                        Stream s = new FileStream("tempavatar", FileMode.Open);
+                        await ctx.Client.EditCurrentUserAsync(avatar: s);
+                        s.Dispose();
+                        File.Delete("tempavatar");
+                    }
+                }
+                catch(Exception)
+                {
+                    await ctx.RespondAsync("Something went wrong.");
+                }
+            }
+            else
+                await ctx.RespondAsync("Please attach an image to the command.");
+        }
+
+        [Command("getavatar"), Description("Send you the url of my current avatar.")]
+        public async Task GetAvatar(CommandContext ctx)
+        {
+            await ctx.RespondAsync(ctx.Client.CurrentUser.AvatarUrl);
         }
 
         [Command("flag"), Description("Check the value of a configuration flag."), RequireOwner]
@@ -358,6 +391,12 @@ namespace DiscordBot.Modules
             {
                 await ctx.RespondAsync("Module does not exist.");
             }
+        }
+
+        [Command("listmodules"), Description("List modules and their states.")]
+        public async Task ListModules(CommandContext ctx)
+        {
+            await ctx.RespondAsync(Program.moduleManager.Print());
         }
 
     }

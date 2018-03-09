@@ -15,7 +15,7 @@ namespace DiscordBot.Modules.Classes
         static ConcurrentDictionary<ulong, DateTime> lastLogins;
         Timer timer;
 
-        const string LASTLOGINS_FILE = "Files\\Admin\\lastlogins.json";
+        const string LASTLOGINS_FILE = "Files/Admin/lastlogins.json";
 
         public AutoPrune()
         {
@@ -45,17 +45,21 @@ namespace DiscordBot.Modules.Classes
 
         public void Kill()
         {
+            timer.Stop();
+            Save();
+        }
+
+        public void Save()
+        {
             try
             {
-                timer.Stop();
-
-                if (!Directory.Exists("Files\\Admin"))
-                    Directory.CreateDirectory("Files\\Admin");
+                if (!Directory.Exists("Files/Admin"))
+                    Directory.CreateDirectory("Files/Admin");
 
                 var json = JsonConvert.SerializeObject(lastLogins, Formatting.Indented);
                 File.WriteAllText(LASTLOGINS_FILE, json);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.Error("Failed to save lastLogins.");
                 if (Program.cfg.Debug())
@@ -105,9 +109,25 @@ namespace DiscordBot.Modules.Classes
                         lastLogins[offender] = DateTime.Now;
                     else
                     {
-                        await guild.RemoveMemberAsync(member, "Automatically pruned for being offline for " + dayLimit + " days.");
-                        lastLogins.TryRemove(offender, out var disposable);
-                        kicked++;
+                        var regularsId = ulong.Parse(Program.cfg.GetValue("regulars"));
+                        bool isRegular = false;
+                        foreach(var role in member.Roles)
+                        {
+                            if(role.Id == regularsId) //Regulars dont get kicked
+                            {
+                                lastLogins.TryRemove(offender, out var disp);
+                                Log.Warning($"Regular {member.Username}#{member.Discriminator} hasn't been online for 30 days!");
+                                isRegular = true;
+                                break;
+                            }
+                        }
+
+                        if (!isRegular)
+                        {
+                            await guild.RemoveMemberAsync(member, "Automatically pruned for being offline for " + dayLimit + " days.");
+                            lastLogins.TryRemove(offender, out var disposable);
+                            kicked++;
+                        }
                     }
                 }
 

@@ -14,7 +14,7 @@ namespace DiscordBot.Modules.Classes
         ConcurrentDictionary<ulong, ulong> channelsToRoles;
         ConcurrentDictionary<ulong, int> channelsLinkUsages;
 
-        const string INVITELINK_FILE = "Files\\Admin\\invitelinkroles.json";
+        const string INVITELINK_FILE = "Files/Admin/invitelinkroles.json";
 
         public InviteRoles()
         {
@@ -35,14 +35,18 @@ namespace DiscordBot.Modules.Classes
 
         public void Kill()
         {
+            Save();
+        }
+
+        public void Save()
+        {
             try
             {
-                if (!Directory.Exists("Files\\Admin"))
-                    Directory.CreateDirectory("Files\\Admin");
+                if (!Directory.Exists("Files/Admin"))
+                    Directory.CreateDirectory("Files/Admin");
 
                 var json = JsonConvert.SerializeObject(channelsToRoles, Formatting.Indented);
                 File.WriteAllText(INVITELINK_FILE, json);
-                Log.Success("Saved invitelinkroles.");
             }
             catch (Exception e)
             {

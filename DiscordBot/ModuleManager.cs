@@ -11,7 +11,7 @@ namespace DiscordBot
     class ModuleManager : Killable
     {
 
-        const string MODULES_FILE = "Files\\Meta\\loadedModules.json";
+        const string MODULES_FILE = "Files/Meta/loadedModules.json";
 
         List<string> modules; //hardcoded for ease of use
         ConcurrentDictionary<string, bool> isLoaded; //saved data
@@ -24,6 +24,7 @@ namespace DiscordBot
             modules.Add("chat");
             modules.Add("info");
             modules.Add("api");
+            modules.Add("tools");
 
             try
             {
@@ -60,18 +61,30 @@ namespace DiscordBot
 
         public void Kill()
         {
+            Save();
+        }
+
+        public void Save()
+        {
             try
             {
                 var json = JsonConvert.SerializeObject(isLoaded, Formatting.Indented);
                 File.WriteAllText(MODULES_FILE, json);
-                Log.Success("Saved module data.");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.Error("Failed to save ModulesLoaded file!");
                 if (Program.cfg.Debug())
                     Log.Error(e.ToString());
             }
+        }
+
+        public string Print()
+        {
+            string result = "";
+            foreach (var pair in isLoaded)
+                result += "[" + (pair.Value ? "ON" : "OFF") + "]" + pair.Key + " | ";
+            return result;
         }
 
         public bool HasModule(string moduleName)
@@ -133,6 +146,10 @@ namespace DiscordBot
                     Program._commands.RegisterCommands<APIModule>();
                     break;
 
+                case "tools":
+                    Program._commands.RegisterCommands<ToolsModule>();
+                    break;
+
                 default: break;
             }
         }
@@ -159,6 +176,10 @@ namespace DiscordBot
 
                 case "api":
                     Program._commands.UnregisterCommands<APIModule>();
+                    break;
+
+                case "tools":
+                    Program._commands.UnregisterCommands<ToolsModule>();
                     break;
 
                 default: break;

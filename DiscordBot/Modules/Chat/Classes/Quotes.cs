@@ -10,15 +10,15 @@ namespace DiscordBot.Modules.Classes
     class Quotes : Killable
     {
 
-        const string QUOTE_FILE = "Files\\Chat\\quotes.json";
+        const string QUOTE_FILE = "Files/Chat/quotes.json";
 
         Data data;
 
         public Quotes()
         {
 
-            if (!Directory.Exists("Files\\Chat"))
-                Directory.CreateDirectory("Files\\Chat");
+            if (!Directory.Exists("Files/Chat"))
+                Directory.CreateDirectory("Files/Chat");
 
             try
             {
@@ -36,6 +36,11 @@ namespace DiscordBot.Modules.Classes
         }
 
         public void Kill()
+        {
+            Save();
+        }
+
+        public void Save()
         {
             try
             {

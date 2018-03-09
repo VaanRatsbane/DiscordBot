@@ -12,9 +12,14 @@ namespace DiscordBot
     {
 
         /// <summary>
-        /// Saves data.
+        /// Cleanup.
         /// </summary>
         void Kill();
+
+        /// <summary>
+        /// Saves data.
+        /// </summary>
+        void Save();
 
     }
 }

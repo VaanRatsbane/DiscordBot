@@ -128,18 +128,25 @@ namespace DiscordBot
 
         private static async Task _discord_GuildAvailable(DSharpPlus.EventArgs.GuildCreateEventArgs e)
         {
-            var guildText = cfg.GetValue("guild");
-            if (guildText != null && ulong.TryParse(guildText, out ulong guild) && e.Guild.Id == guild)
+            try
             {
-                var members = await e.Guild.GetAllMembersAsync();
-                if (members.Count == 0)
-                    Log.Warning("0 members in GetAllMembersAsync");
-                else
-                    autoPrune.Initialize(members);
-            }
+                var guildText = cfg.GetValue("guild");
+                if (guildText != null && ulong.TryParse(guildText, out ulong guild) && e.Guild.Id == guild)
+                {
+                    var members = await e.Guild.GetAllMembersAsync();
+                    if (members.Count == 0)
+                        Log.Warning("0 members in GetAllMembersAsync");
+                    else
+                        autoPrune.Initialize(members);
+                }
 
-            softbans.SolvePardons();
-            HelpEmbeds.Initialize(); //Setup help embeds
+                softbans.SolvePardons();
+                await HelpEmbeds.Initialize(e.Guild); //Setup help embeds
+            }
+            catch(Exception exc)
+            {
+                Log.Error(exc.ToString());
+            }
         }
 
         private static Task _discord_ChannelDeleted(DSharpPlus.EventArgs.ChannelDeleteEventArgs e)
@@ -215,12 +222,17 @@ namespace DiscordBot
 
         private static void Save(bool finalSave)
         {
-            //kill 'em all
-            foreach (var ded in killables)
-                ded.Kill();
-
             if (finalSave)
+            {
                 saveTimer.Stop();
+                foreach (var ded in killables)
+                    ded.Kill();
+            }
+            else
+            {
+                foreach (var kindaalive in killables)
+                    kindaalive.Save();
+            }
         }
 
         private static void RegisterCommands()
@@ -232,6 +244,7 @@ namespace DiscordBot
             if (moduleManager.ModuleState("chat")) _commands.RegisterCommands<ChatModule>();
             if (moduleManager.ModuleState("info")) _commands.RegisterCommands<InfoModule>();
             if (moduleManager.ModuleState("api")) _commands.RegisterCommands<APIModule>();
+            if (moduleManager.ModuleState("tools")) _commands.RegisterCommands<ToolsModule>();
         }
 
         private static async Task TaskDelay(CancellationToken token)

@@ -15,7 +15,7 @@ namespace DiscordBot.Modules.Classes
         ulong nextUnbanID; //if 0 there is no next
         Timer unbanTimer;
 
-        const string SOFTBANS_FILE = "Files\\Admin\\softbans.json";
+        const string SOFTBANS_FILE = "Files/Admin/softbans.json";
 
         public Softbans()
         {
@@ -40,6 +40,11 @@ namespace DiscordBot.Modules.Classes
         public void Kill()
         {
             unbanTimer.Stop();
+            Save();
+        }
+
+        public void Save()
+        {
             try
             {
                 var json = JsonConvert.SerializeObject(softbans, Formatting.Indented);

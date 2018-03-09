@@ -13,8 +13,8 @@ namespace DiscordBot
     class ConfigLoader : Killable
     {
         
-        const string FLAGS_FILE = "Files\\Meta\\flags.json";
-        const string VALUES_FILE = "Files\\Meta\\values.json";
+        const string FLAGS_FILE = "Files/Meta/flags.json";
+        const string VALUES_FILE = "Files/Meta/values.json";
 
         private ConcurrentDictionary<string, bool> flags;
         private ConcurrentDictionary<string, string> values;
@@ -57,14 +57,18 @@ namespace DiscordBot
 
         public void Kill()
         {
-            if (!Directory.Exists("Files\\Meta\\"))
-                Directory.CreateDirectory("Files\\Meta\\");
+            Save();
+        }
+
+        public void Save()
+        {
+            if (!Directory.Exists("Files/Meta/"))
+                Directory.CreateDirectory("Files/Meta/");
 
             try
             {
                 var json = JsonConvert.SerializeObject(flags, Formatting.Indented);
                 File.WriteAllText(FLAGS_FILE, json);
-                Log.Success("Saved configuration flags.");
             }
             catch (Exception e)
             {
@@ -76,7 +80,6 @@ namespace DiscordBot
             {
                 var json = JsonConvert.SerializeObject(values, Formatting.Indented);
                 File.WriteAllText(VALUES_FILE, json);
-                Log.Success("Saved configuration settings.");
             }
             catch (Exception e)
             {

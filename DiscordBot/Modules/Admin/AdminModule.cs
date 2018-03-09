@@ -94,7 +94,7 @@ namespace DiscordBot.Modules
             TimeSpan span = new TimeSpan();
             if(pieces.Length < 12)
             {
-                if(pieces.Length == 1 && pieces[0].ToLowerInvariant() == "permanent")
+                if(pieces.Length == 1 && pieces[0].ToUpperInvariant() == "PERMANENT")
                 {
                     lift = default(DateTime);
                 }
@@ -104,29 +104,29 @@ namespace DiscordBot.Modules
                     {
                         if(int.TryParse(pieces[i], out int value))
                         {
-                            switch(pieces[i+1].ToLowerInvariant())
+                            switch(pieces[i+1].ToUpperInvariant())
                             {
-                                case "year": case "years":
+                                case "year": case "YEARS":
                                     span.Add(new TimeSpan(365 * value, 0, 0, 0));
                                     break;
 
-                                case "month": case "months":
+                                case "month": case "MONTHS":
                                     span.Add(new TimeSpan(30 * value, 0, 0, 0));
                                     break;
 
-                                case "day": case "days":
+                                case "day": case "DAYS":
                                     span.Add(new TimeSpan(value, 0, 0, 0));
                                     break;
 
-                                case "hour": case "hours":
+                                case "hour": case "HOURS":
                                     span.Add(new TimeSpan(0, value, 0, 0));
                                     break;
 
-                                case "minute":case "minutes":
+                                case "minute":case "MINUTES":
                                     span.Add(new TimeSpan(0, 0, value, 0));
                                     break;
 
-                                case "second": case "seconds":
+                                case "second": case "SECONDS":
                                     span.Add(new TimeSpan(0, 0, 0, value));
                                     break;
 
