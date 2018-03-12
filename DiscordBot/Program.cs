@@ -118,7 +118,15 @@ namespace DiscordBot
 
             Log.Info("Closing...");
 
-            await _discord.DisconnectAsync();
+            try
+            {
+                await _discord.DisconnectAsync();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                Console.ReadKey();
+            }
         }
 
         private static void SaveTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -141,7 +149,7 @@ namespace DiscordBot
                 }
 
                 softbans.SolvePardons();
-                await HelpEmbeds.Initialize(e.Guild); //Setup help embeds
+                HelpEmbeds.Initialize(e.Guild); //Setup help embeds
             }
             catch(Exception exc)
             {
@@ -181,10 +189,27 @@ namespace DiscordBot
             }
         }
 
-        private static Task _discord_PresenceUpdated(DSharpPlus.EventArgs.PresenceUpdateEventArgs e)
+        private static async Task _discord_PresenceUpdated(DSharpPlus.EventArgs.PresenceUpdateEventArgs e)
         {
+            if (e.Member == null)
+                return;
+
             autoPrune.Logged(e.Member.Id);
-            return Task.CompletedTask;
+
+            if (e.PresenceBefore.Game != null && e.PresenceBefore.Game.StreamType == GameStreamType.NoStream && e.Member.Presence.Game.StreamType == GameStreamType.Twitch)
+            {
+                if (e.Guild != null)
+                {
+                    var channel = e.Guild.GetChannel(ulong.Parse(cfg.GetValue("twitchchannel")));
+                    if (channel != null)
+                        await channel.SendMessageAsync(e.Member.DisplayName + " is streaming at " + e.Member.Presence.Game.Url);
+                    else
+                        Console.WriteLine("Channel is null");
+                }
+                else
+                    Console.WriteLine("Guild is null");
+            }
+            await Task.CompletedTask;
         }
 
         private static void Load()

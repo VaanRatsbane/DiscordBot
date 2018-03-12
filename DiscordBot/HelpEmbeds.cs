@@ -9,14 +9,15 @@ namespace DiscordBot
     class HelpEmbeds
     {
 
-        public static DiscordEmbed help, admin, bot, chat, info, api, math, tools;
+        public static DiscordEmbed help, commands, admin, bot, chat, info, api, math, tools;
 
-        public static async Task Initialize(DiscordGuild guild)
+        public static void Initialize(DiscordGuild guild)
         {
             var authorName = $"{Program._discord.CurrentUser.Username}#{Program._discord.CurrentUser.Discriminator}";
             var authorIcon = Program._discord.CurrentUser.AvatarUrl;
 
             BuildHelp(authorName, authorIcon);
+            BuildCommands(authorName, authorIcon);
             BuildAdmin(authorName, authorIcon);
             BuildBot(authorName, authorIcon);
             BuildChat(authorName, authorIcon);
@@ -24,27 +25,6 @@ namespace DiscordBot
             BuildAPI(authorName, authorIcon);
             BuildMath(authorName, authorIcon);
             BuildTools(authorName, authorIcon);
-
-            //update
-            var channel = guild.GetChannel(ulong.Parse(Program.cfg.GetValue("instructionschannel")));
-
-            var helpMsg = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("helpembed")));
-            var adminMsg = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("adminembed")));
-            var botMsg = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("botembed")));
-            var chatMsg = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("chatembed")));
-            var infoMsg = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("infoembed")));
-            var apiMsg = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("apiembed")));
-            var mathMsg = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("mathembed")));
-            var toolsMsg = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("toolsembed")));
-
-            await helpMsg.ModifyAsync(content : "",embed: help);
-            await adminMsg.ModifyAsync(content: "", embed: admin);
-            await botMsg.ModifyAsync(content: "", embed: bot);
-            await chatMsg.ModifyAsync(content: "", embed: chat);
-            await infoMsg.ModifyAsync(content: "", embed: info);
-            await apiMsg.ModifyAsync(content: "", embed: api);
-            await mathMsg.ModifyAsync(content: "", embed: math);
-            await toolsMsg.ModifyAsync(content: "", embed: tools);
         }
 
         private static void BuildHelp(string authorName, string authorIcon)
@@ -55,6 +35,25 @@ namespace DiscordBot
                 .WithTitle("Command groups.")
                 .WithDescription("Use !help < group > to see the available commands.")
                 .AddField("Groups", "admin, api, bot, chat, help, info, math, tools");
+        }
+
+        private static void BuildCommands(string authorName, string authorIcon)
+        {
+            commands = new DiscordEmbedBuilder()
+                .WithAuthor(authorName, null, authorIcon)
+                .WithColor(DiscordColor.PhthaloBlue)
+                .WithTitle("Commands.")
+                .WithDescription("Use !help < command > to see the available commands.")
+                .AddField("Admin", "dumplog, inviterolelink, removerolelink, prune, " +
+                "softban, pardon, pardonroles, listsoftbans, wipe")
+                .AddField("Bot", "setnick, setstate, setgame, setavatar, getavatar, flag, toggleflag, createflag, deleteflag, " +
+                "listflags, setting, setsetting, createsetting, deletesetting, listsetting, " +
+                "key, setkey, createkey, deletekey, listkeys, quit, enablemodule, disablemodule, listmodules")
+                .AddField("Chat", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab")
+                .AddField("Info", "about, status, server")
+                .AddField("API", "weather, ff, tf2, ow, mc, reddit")
+                .AddField("Math", "calc, rolldice, decvalues, octvalues, binvalues, hexvalues")
+                .AddField("Tools", "color, uncolor, listcolors, tinyurl, lmgtfy, togethertube");
         }
 
         private static void BuildAdmin(string authorName, string authorIcon)
@@ -107,7 +106,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Cyan)
                 .WithTitle("Commands to poll information from the internet.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "weather");
+                .AddField("Commands", "weather, ff, tf2, ow, mc, reddit");
         }
 
         private static void BuildMath(string authorName, string authorIcon)
@@ -127,7 +126,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Chartreuse)
                 .WithTitle("Tools for the user.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "color, uncolor, listcolors, tinyurl, lmgtfy");
+                .AddField("Commands", "color, uncolor, listcolors, tinyurl, lmgtfy, togethertube");
         }
 
     }

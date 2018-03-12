@@ -1,8 +1,10 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -78,6 +80,24 @@ namespace DiscordBot.Modules
         public async Task LMGTFY(CommandContext ctx, [RemainingText]string url)
         {
             await TinyUrl(ctx, "http://letmegooglethatforyou.com/?q="+url);
+        }
+
+        //Nadeko
+        [Command("togethertube"), Aliases("totube"), Description("Watch videos with your friends!")]
+        public async Task ToTube(CommandContext ctx, [RemainingText]string url)
+        {
+            Uri uri;
+            using (var client = new HttpClient())
+            {
+                var res = await client.GetAsync("https://togethertube.com/room/create").ConfigureAwait(false);
+                uri = res.RequestMessage.RequestUri;
+            }
+
+            var embed = new DiscordEmbedBuilder()
+                .WithAuthor("TogetherTube", "https://togethertube.com/", "https://togethertube.com/assets/img/favicons/favicon-32x32.png")
+                .WithDescription("You're okay, get in!\n" + uri);
+
+            await ctx.RespondAsync(embed: embed);
         }
 
     }
