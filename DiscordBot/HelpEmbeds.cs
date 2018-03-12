@@ -49,7 +49,7 @@ namespace DiscordBot
                 .AddField("Bot", "setnick, setstate, setgame, setavatar, getavatar, flag, toggleflag, createflag, deleteflag, " +
                 "listflags, setting, setsetting, createsetting, deletesetting, listsetting, " +
                 "key, setkey, createkey, deletekey, listkeys, quit, enablemodule, disablemodule, listmodules")
-                .AddField("Chat", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab")
+                .AddField("Chat", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab, cookie, cookies")
                 .AddField("Info", "about, status, server")
                 .AddField("API", "weather, ff, tf2, ow, mc, reddit")
                 .AddField("Math", "calc, rolldice, decvalues, octvalues, binvalues, hexvalues")
@@ -86,7 +86,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Yellow)
                 .WithTitle("Fun chat shenanigans.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab");
+                .AddField("Commands", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab, cookie, cookies");
         }
 
         private static void BuildInfo(string authorName, string authorIcon)

@@ -30,6 +30,7 @@ namespace DiscordBot
         public static AutoPrune autoPrune;
         public static Softbans softbans;
         public static Quotes quotes;
+        public static CookieManager cookies;
 
         public static Random rng;
 
@@ -243,6 +244,11 @@ namespace DiscordBot
             //Quotes
             quotes = new Quotes();
             killables.Add(quotes);
+
+            //Cookies
+            cookies = new CookieManager();
+            killables.Add(cookies);
+
         }
 
         private static void Save(bool finalSave)

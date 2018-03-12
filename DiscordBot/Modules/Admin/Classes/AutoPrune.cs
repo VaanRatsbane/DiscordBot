@@ -137,8 +137,6 @@ namespace DiscordBot.Modules.Classes
 
         private static async void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
-            Log.Info("Scheduled pruning...");
-
             int kicked = await Prune();
 
             if (kicked > 0)

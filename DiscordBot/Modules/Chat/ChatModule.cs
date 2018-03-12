@@ -34,7 +34,7 @@ namespace DiscordBot.Modules
             else
                 message = await channel.GetMessageAsync(messageId);
 
-            if(message == null)
+            if (message == null)
             {
                 await ctx.RespondAsync("That message does not exist.");
             }
@@ -59,7 +59,7 @@ namespace DiscordBot.Modules
                     .WithFooter(quote.date + " | " + quote.messageId)
                     .WithDescription(quote.message);
 
-                await ctx.RespondAsync(embed:embed);
+                await ctx.RespondAsync(embed: embed);
             }
         }
 
@@ -86,7 +86,7 @@ namespace DiscordBot.Modules
             foreach (var c in query)
                 value += c;
             string answer;
-            switch(value % 3)
+            switch (value % 3)
             {
                 case 0:
                     answer = "Yes.";
@@ -110,7 +110,7 @@ namespace DiscordBot.Modules
             await ctx.Message.DeleteAsync();
             await ctx.TriggerTypingAsync();
             string result = "";
-            foreach(var c in text.ToLowerInvariant())
+            foreach (var c in text.ToLowerInvariant())
             {
                 if (c >= 97 && c <= 122)
                 {
@@ -177,8 +177,36 @@ namespace DiscordBot.Modules
         public async Task Dab(CommandContext ctx)
         {
             await ctx.Message.DeleteAsync();
-            await ctx.RespondAsync(":FeelsDabMan:");
+            await ctx.RespondAsync((await ctx.Guild.GetEmojiAsync(410860287852412928)));
         }
 
+        [Command("cookie"), Description("Gives a cookie 🍪yum🍪")]
+        public async Task Cookie(CommandContext ctx, DiscordMember member)
+        {
+            Program.cookies.AddCookie(ctx.Member, member);
+            await ctx.RespondAsync($"🍪 {ctx.Member.DisplayName} gave {member.DisplayName} a cookie! 🍪");
+        }
+
+        [Command("cookies"), Description("How many cookies have been going around.")]
+        public async Task Cookies(CommandContext ctx, DiscordMember member = null)
+        {
+            if(ctx.Member.Id == member.Id)
+            {
+                await ctx.RespondAsync("You cannot send cookies to yourself, fatty!");
+                return;
+            }
+
+            int given, received;
+            Program.cookies.GetCookie(member, out given, out received);
+            if (given == -1 && received == -1)
+                await ctx.RespondAsync("That user has never sent or received cookies. Awww!");
+            else
+            {
+                if (member == null)
+                    await ctx.RespondAsync($"In this server {given} cookies have been sent!");
+                else
+                    await ctx.RespondAsync($"{member.DisplayName} has sent {given} cookies and received {received} cookies! " + (received > given ? "How greedy!" : "How nice!"));
+            }
+        }
     }
 }
