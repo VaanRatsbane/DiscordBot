@@ -9,7 +9,7 @@ namespace DiscordBot
     class HelpEmbeds
     {
 
-        public static DiscordEmbed help, commands, admin, bot, chat, info, api, math, tools;
+        public static DiscordEmbed help, commands, admin, bot, chat, info, api, math, tools, scheduler;
 
         public static void Initialize(DiscordGuild guild)
         {
@@ -25,6 +25,7 @@ namespace DiscordBot
             BuildAPI(authorName, authorIcon);
             BuildMath(authorName, authorIcon);
             BuildTools(authorName, authorIcon);
+            BuildScheduler(authorName, authorIcon);
         }
 
         private static void BuildHelp(string authorName, string authorIcon)
@@ -53,7 +54,8 @@ namespace DiscordBot
                 .AddField("Info", "about, status, server")
                 .AddField("API", "weather, ff, tf2, ow, mc, reddit")
                 .AddField("Math", "calc, rolldice, decvalues, octvalues, binvalues, hexvalues")
-                .AddField("Tools", "color, uncolor, listcolors, tinyurl, lmgtfy, togethertube");
+                .AddField("Tools", "color, uncolor, listcolors, tinyurl, lmgtfy, togethertube")
+                .AddField("Scheduler", "remindme, listreminders, cancelreminder");
         }
 
         private static void BuildAdmin(string authorName, string authorIcon)
@@ -127,6 +129,16 @@ namespace DiscordBot
                 .WithTitle("Tools for the user.")
                 .WithDescription("Use !help < command > to learn more.")
                 .AddField("Commands", "color, uncolor, listcolors, tinyurl, lmgtfy, togethertube");
+        }
+
+        private static void BuildScheduler(string authorName, string authorIcon)
+        {
+            scheduler = new DiscordEmbedBuilder()
+                .WithAuthor(authorName + " - Scheduler", null, authorIcon)
+                .WithColor(DiscordColor.Chartreuse)
+                .WithTitle("Time based notifications.")
+                .WithDescription("Use !help < command > to learn more.")
+                .AddField("Commands", "remindme, listreminders, cancelreminder");
         }
 
     }

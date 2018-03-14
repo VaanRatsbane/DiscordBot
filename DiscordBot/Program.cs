@@ -31,6 +31,7 @@ namespace DiscordBot
         public static Softbans softbans;
         public static Quotes quotes;
         public static CookieManager cookies;
+        public static SchedulerManager scheduler;
 
         public static Random rng;
 
@@ -147,6 +148,9 @@ namespace DiscordBot
                         Log.Warning("0 members in GetAllMembersAsync");
                     else
                         autoPrune.Initialize(members);
+
+                    await scheduler.SolveReminders();
+                    scheduler.SetReminderTimer();
                 }
 
                 softbans.SolvePardons();
@@ -192,24 +196,10 @@ namespace DiscordBot
 
         private static async Task _discord_PresenceUpdated(DSharpPlus.EventArgs.PresenceUpdateEventArgs e)
         {
-            if (e.Member == null)
-                return;
 
             autoPrune.Logged(e.Member.Id);
 
-            if (e.PresenceBefore.Game != null && e.PresenceBefore.Game.StreamType == GameStreamType.NoStream && e.Member.Presence.Game.StreamType == GameStreamType.Twitch)
-            {
-                if (e.Guild != null)
-                {
-                    var channel = e.Guild.GetChannel(ulong.Parse(cfg.GetValue("twitchchannel")));
-                    if (channel != null)
-                        await channel.SendMessageAsync(e.Member.DisplayName + " is streaming at " + e.Member.Presence.Game.Url);
-                    else
-                        Console.WriteLine("Channel is null");
-                }
-                else
-                    Console.WriteLine("Guild is null");
-            }
+            await TwitchNotifs.AddNotificationAsync(e);
             await Task.CompletedTask;
         }
 
@@ -249,6 +239,10 @@ namespace DiscordBot
             cookies = new CookieManager();
             killables.Add(cookies);
 
+            //Scheduler
+            scheduler = new SchedulerManager();
+            killables.Add(scheduler);
+
         }
 
         private static void Save(bool finalSave)
@@ -276,6 +270,7 @@ namespace DiscordBot
             if (moduleManager.ModuleState("info")) _commands.RegisterCommands<InfoModule>();
             if (moduleManager.ModuleState("api")) _commands.RegisterCommands<APIModule>();
             if (moduleManager.ModuleState("tools")) _commands.RegisterCommands<ToolsModule>();
+            if (moduleManager.ModuleState("scheduler")) _commands.RegisterCommands<SchedulerManager>();
         }
 
         private static async Task TaskDelay(CancellationToken token)

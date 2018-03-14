@@ -183,6 +183,12 @@ namespace DiscordBot.Modules
         [Command("cookie"), Description("Gives a cookie 🍪yum🍪")]
         public async Task Cookie(CommandContext ctx, DiscordMember member)
         {
+            if (ctx.Member.Id == member.Id)
+            {
+                await ctx.RespondAsync("You cannot send cookies to yourself, fatty!");
+                return;
+            }
+
             Program.cookies.AddCookie(ctx.Member, member);
             await ctx.RespondAsync($"🍪 {ctx.Member.DisplayName} gave {member.DisplayName} a cookie! 🍪");
         }
@@ -190,12 +196,6 @@ namespace DiscordBot.Modules
         [Command("cookies"), Description("How many cookies have been going around.")]
         public async Task Cookies(CommandContext ctx, DiscordMember member = null)
         {
-            if(ctx.Member.Id == member.Id)
-            {
-                await ctx.RespondAsync("You cannot send cookies to yourself, fatty!");
-                return;
-            }
-
             int given, received;
             Program.cookies.GetCookie(member, out given, out received);
             if (given == -1 && received == -1)

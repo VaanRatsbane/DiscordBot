@@ -25,6 +25,7 @@ namespace DiscordBot
             modules.Add("info");
             modules.Add("api");
             modules.Add("tools");
+            modules.Add("scheduler");
 
             try
             {
@@ -150,6 +151,10 @@ namespace DiscordBot
                     Program._commands.RegisterCommands<ToolsModule>();
                     break;
 
+                case "scheduler":
+                    Program._commands.RegisterCommands<SchedulerModule>();
+                    break;
+
                 default: break;
             }
         }
@@ -180,6 +185,10 @@ namespace DiscordBot
 
                 case "tools":
                     Program._commands.UnregisterCommands<ToolsModule>();
+                    break;
+
+                case "scheduler":
+                    Program._commands.UnregisterCommands<SchedulerModule>();
                     break;
 
                 default: break;
