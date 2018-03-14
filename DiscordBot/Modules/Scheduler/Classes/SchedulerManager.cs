@@ -32,15 +32,17 @@ namespace DiscordBot.Modules.Classes
                 remindersPerUser = JsonConvert.DeserializeObject<Dictionary<ulong, List<Reminder>>>(json);
 
                 Log.Success("Loaded reminders.");
-
-                reminderTimer = new Timer();
-                reminderTimer.AutoReset = false;
-                reminderTimer.Elapsed += ReminderTimer_Elapsed;
             }
             catch
             {
                 Log.Warning("Couldn't load schedules. Initializing...");
+                reminders = new SortedList<DateTime, List<Reminder>>();
+                remindersPerUser = new Dictionary<ulong, List<Reminder>>();
             }
+
+            reminderTimer = new Timer();
+            reminderTimer.AutoReset = false;
+            reminderTimer.Elapsed += ReminderTimer_Elapsed;
 
         }
 
