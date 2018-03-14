@@ -51,7 +51,7 @@ namespace DiscordBot
                 "listflags, setting, setsetting, createsetting, deletesetting, listsetting, " +
                 "key, setkey, createkey, deletekey, listkeys, quit, enablemodule, disablemodule, listmodules")
                 .AddField("Chat", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab, cookie, cookies")
-                .AddField("Info", "about, status, server")
+                .AddField("Info", "about, status, server, uptime")
                 .AddField("API", "weather, ff, tf2, ow, mc, reddit")
                 .AddField("Math", "calc, rolldice, decvalues, octvalues, binvalues, hexvalues")
                 .AddField("Tools", "color, uncolor, listcolors, tinyurl, lmgtfy, togethertube")
@@ -98,7 +98,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Teal)
                 .WithTitle("Get information on various subjects.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "about, status, server");
+                .AddField("Commands", "about, status, server, uptime");
         }
 
         private static void BuildAPI(string authorName, string authorIcon)

@@ -53,6 +53,13 @@ namespace DiscordBot.Modules
             await ctx.RespondAsync(embed: embed);
         }
 
+        [Command("uptime"), Description("How long I've been running.")]
+        public async Task Uptime(CommandContext ctx)
+        {
+            var p = Process.GetCurrentProcess();
+            await ctx.RespondAsync("I've been running since " + (DateTime.Now - p.StartTime).ToString("yyyy-MM-dd HH:mm:ss") + " (since " + p.StartTime.ToString("yyyy-MM-dd HH:mm:ss") + ")");
+        }
+
         [Command("server"), Description("Information about this server.")]
         public async Task Server(CommandContext ctx)
         {

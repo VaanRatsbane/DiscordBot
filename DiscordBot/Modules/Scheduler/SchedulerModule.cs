@@ -14,7 +14,7 @@ namespace DiscordBot.Modules
 
         [Command("remindme"), Description("I'll remind you of something after the given time passes.")]
         public async Task RemindeMe(CommandContext ctx, [Description("When to remind you. Use the following format:" +
-            " 1 Jan 2018 8:30 AM +01:00 (adjust values accordingly, +00:00 if GMT).")]string date,
+            " 1 Jan 2018 8:30 AM +01:00 (adjust values accordingly, both your datetime and timezone).")]string date,
             [RemainingText, Description("The message you want to be reminded with.")] string message)
         {
             try

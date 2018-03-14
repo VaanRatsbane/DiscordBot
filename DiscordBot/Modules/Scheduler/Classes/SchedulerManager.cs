@@ -103,7 +103,8 @@ namespace DiscordBot.Modules.Classes
             if (!remindersPerUser.ContainsKey(memberId) || remindersPerUser.Count == 0)
                 return rems.ToArray();
 
-            rems.Add("Dates are in GMT");
+            var offset = DateTimeOffset.Now;
+            rems.Add($"Dates are in UTC{(offset.Offset.Hours < 0 ? "-" : "+")}{offset.Offset.TotalHours.ToString("0.00")}");
             for (int i = 0; i < remindersPerUser.Count; i++)
             {
                 var reminder = remindersPerUser[memberId][i];
