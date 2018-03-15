@@ -13,13 +13,12 @@ namespace DiscordBot.Modules
     {
 
         [Command("remindme"), Description("I'll remind you of something after the given time passes.")]
-        public async Task RemindeMe(CommandContext ctx, [Description("When to remind you. Use the following format:" +
-            " 1 Jan 2018 8:30 AM +01:00 (adjust values accordingly, both your datetime and timezone).")]string date,
+        public async Task RemindeMe(CommandContext ctx, [Description("When to remind you. Remember to add a timezone if you don't share the bot's.")]string date,
             [RemainingText, Description("The message you want to be reminded with.")] string message)
         {
             try
             {
-                DateTime scheduled = DateTime.ParseExact(date, "dd MMM yyyy h:mm tt zzz", CultureInfo.InvariantCulture);
+                DateTime scheduled = DateTime.Parse(date);
                 if(scheduled < DateTime.Now)
                     await ctx.RespondAsync("I can't remind you in the past!");
                 else
