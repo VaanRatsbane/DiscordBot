@@ -214,7 +214,7 @@ namespace DiscordBot.Modules
             var interactivity = ctx.Client.GetInteractivityModule();
             await ctx.RespondAsync("Are you sure you wish to remove this setting? It may break the bot! (yes or no)");
             var msg = await interactivity.WaitForMessageAsync(xm => xm.Author.Id == ctx.User.Id &&
-                xm.Content.ToLowerInvariant() == "yes");
+                xm.Content.ToLowerInvariant() == "yes", TimeSpan.FromSeconds(30));
             if (msg != null)
             {
                 if (Program.cfg.DeleteFlag(setting.ToLowerInvariant()))
@@ -305,7 +305,7 @@ namespace DiscordBot.Modules
             var interactivity = ctx.Client.GetInteractivityModule();
             await ctx.RespondAsync("Are you sure you wish to remove this key? It may break the bot! (yes or no)");
             var msg = await interactivity.WaitForMessageAsync(xm => xm.Author.Id == ctx.User.Id &&
-                xm.Content.ToLowerInvariant() == "yes");
+                xm.Content.ToLowerInvariant() == "yes", TimeSpan.FromSeconds(30));
             if (msg != null)
             {
                 var value = Program.keys.DeleteKey(key.ToLowerInvariant());

@@ -21,24 +21,6 @@ namespace DiscordBot.Modules
             else
                 await ctx.RespondAsync(embed: HelpEmbeds.help);
         }
-
-        [Command("updateGroups"), RequireOwner]
-        public async Task Update(CommandContext ctx)
-        {
-            var channelId = ulong.Parse(Program.cfg.GetValue("instructionschannel"));
-            var channel = ctx.Guild.GetChannel(channelId);
-            var g = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("groupsmessage")));
-            await g.ModifyAsync(embed: HelpEmbeds.help);
-        }
-
-        [Command("updateCommands"), RequireOwner]
-        public async Task UpdateCmds(CommandContext ctx)
-        {
-            var channelId = ulong.Parse(Program.cfg.GetValue("instructionschannel"));
-            var channel = ctx.Guild.GetChannel(channelId);
-            var c = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("commandsmessage")));
-            await c.ModifyAsync(embed: HelpEmbeds.commands);
-        }
         
         [Command("commands"), RequireOwner]
         public async Task PrintAll(CommandContext ctx)
