@@ -196,11 +196,17 @@ namespace DiscordBot
 
         private static async Task _discord_PresenceUpdated(DSharpPlus.EventArgs.PresenceUpdateEventArgs e)
         {
+            try
+            {
+                autoPrune.Logged(e.Member.Id);
 
-            autoPrune.Logged(e.Member.Id);
-
-            await TwitchNotifs.AddNotificationAsync(e);
-            await Task.CompletedTask;
+                await TwitchNotifs.AddNotificationAsync(e);
+                await Task.CompletedTask;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         private static void Load()

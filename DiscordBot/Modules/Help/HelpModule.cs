@@ -11,20 +11,33 @@ namespace DiscordBot.Modules
     class HelpModule
     {
 
-        public async Task ExecuteGroupAsync(CommandContext ctx)
+        public async Task ExecuteGroupAsync(CommandContext ctx, string command = null)
         {
-            await ctx.RespondAsync(embed: HelpEmbeds.help);
+            if (command != null && command.Length > 0)
+            {
+                var splices = command.Split(' ');
+                await Program._commands.DefaultHelpAsync(ctx, splices);
+            }
+            else
+                await ctx.RespondAsync(embed: HelpEmbeds.help);
         }
 
-        [Command("update"), RequireOwner]
+        [Command("updateGroups"), RequireOwner]
         public async Task Update(CommandContext ctx)
         {
             var channelId = ulong.Parse(Program.cfg.GetValue("instructionschannel"));
             var channel = ctx.Guild.GetChannel(channelId);
             var g = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("groupsmessage")));
-            var c = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("commandsmessage")));
             await g.ModifyAsync(embed: HelpEmbeds.help);
-            await g.ModifyAsync(embed: HelpEmbeds.commands);
+        }
+
+        [Command("updateCommands"), RequireOwner]
+        public async Task UpdateCmds(CommandContext ctx)
+        {
+            var channelId = ulong.Parse(Program.cfg.GetValue("instructionschannel"));
+            var channel = ctx.Guild.GetChannel(channelId);
+            var c = await channel.GetMessageAsync(ulong.Parse(Program.cfg.GetValue("commandsmessage")));
+            await c.ModifyAsync(embed: HelpEmbeds.commands);
         }
         
         [Command("commands"), RequireOwner]
@@ -81,6 +94,13 @@ namespace DiscordBot.Modules
         {
             await ctx.Message.DeleteAsync();
             var msg = await ctx.RespondAsync(embed: HelpEmbeds.tools);
+        }
+
+        [Command("scheduler")]
+        public async Task Scheduler(CommandContext ctx)
+        {
+            await ctx.Message.DeleteAsync();
+            var msg = await ctx.RespondAsync(embed: HelpEmbeds.scheduler);
         }
 
 
