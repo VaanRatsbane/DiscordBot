@@ -217,7 +217,7 @@ namespace DiscordBot.Modules
                 xm.Content.ToLowerInvariant() == "yes", TimeSpan.FromSeconds(30));
             if (msg != null)
             {
-                if (Program.cfg.DeleteFlag(setting.ToLowerInvariant()))
+                if (Program.cfg.DeleteValue(setting.ToLowerInvariant()))
                 {
                     await ctx.RespondAsync("Setting deleted.");
                     Log.Info($"{ctx.Member.Username}#{ctx.Member.Discriminator} deleted the setting {setting}.");

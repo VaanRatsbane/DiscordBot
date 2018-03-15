@@ -276,7 +276,7 @@ namespace DiscordBot
             if (moduleManager.ModuleState("info")) _commands.RegisterCommands<InfoModule>();
             if (moduleManager.ModuleState("api")) _commands.RegisterCommands<APIModule>();
             if (moduleManager.ModuleState("tools")) _commands.RegisterCommands<ToolsModule>();
-            if (moduleManager.ModuleState("scheduler")) _commands.RegisterCommands<SchedulerManager>();
+            if (moduleManager.ModuleState("scheduler")) _commands.RegisterCommands<SchedulerModule>();
         }
 
         private static async Task TaskDelay(CancellationToken token)
