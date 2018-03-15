@@ -36,6 +36,7 @@ namespace DiscordBot
         public static Random rng;
 
         public static CancellationTokenSource quitToken;
+        public static bool reboot = false;
 
         private static System.Timers.Timer saveTimer;
 
@@ -47,7 +48,7 @@ namespace DiscordBot
         static async Task MainAsync(string[] args)
         {
             Log.Info("Booting...");
-            
+            Log.Info("Derp");
             Load(); //Load files
 
             //Discord Client
@@ -118,7 +119,10 @@ namespace DiscordBot
 
             Save(true);
 
-            Log.Info("Closing...");
+            if (reboot)
+                Log.Info("Rebooting...");
+            else
+                Log.Info("Closing...");
 
             try
             {
@@ -129,6 +133,19 @@ namespace DiscordBot
                 Console.WriteLine(e.ToString());
                 Console.ReadKey();
             }
+
+            if (reboot)
+            {
+                var startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    WorkingDirectory = Environment.CurrentDirectory,
+                    FileName = "dotnet",
+                    Arguments = "run"
+                };
+                System.Diagnostics.Process.Start(startInfo);
+            }
+
+            Environment.Exit(0);
         }
 
         private static void SaveTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

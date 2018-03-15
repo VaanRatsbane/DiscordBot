@@ -68,7 +68,7 @@ namespace DiscordBot.Modules
         }
 
         [Command("cancelreminder"), Description("Cancel one of your reminders.")]
-        public async Task CancelReminder(CommandContext ctx, int reminderToRemove = 0)
+        public async Task CancelReminder(CommandContext ctx, int reminderToRemove)
         {
             if (reminderToRemove <= 0 || !Program.scheduler.CancelReminder(ctx.Member.Id, reminderToRemove))
                 await ctx.RespondAsync("Use listreminders to get a correct Reminder ID to remove.");

@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.Entities;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -16,7 +17,7 @@ namespace DiscordBot.Modules.Classes
         const string REMINDERS_PERUSER_PATH = "Files/Scheduler/remindersperuser.json";
 
         private SortedList<DateTime, List<Reminder>> reminders;
-        private Dictionary<ulong, List<Reminder>> remindersPerUser;
+        private ConcurrentDictionary<ulong, List<Reminder>> remindersPerUser;
         private Timer reminderTimer;
 
         public SchedulerManager()
@@ -29,7 +30,7 @@ namespace DiscordBot.Modules.Classes
                 var json = File.ReadAllText(REMINDERS_PATH);
                 reminders = JsonConvert.DeserializeObject<SortedList<DateTime, List<Reminder>>>(json);
                 json = File.ReadAllText(REMINDERS_PERUSER_PATH);
-                remindersPerUser = JsonConvert.DeserializeObject<Dictionary<ulong, List<Reminder>>>(json);
+                remindersPerUser = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, List<Reminder>>>(json);
 
                 Log.Success("Loaded reminders.");
             }
@@ -37,7 +38,7 @@ namespace DiscordBot.Modules.Classes
             {
                 Log.Warning("Couldn't load schedules. Initializing...");
                 reminders = new SortedList<DateTime, List<Reminder>>();
-                remindersPerUser = new Dictionary<ulong, List<Reminder>>();
+                remindersPerUser = new ConcurrentDictionary<ulong, List<Reminder>>();
             }
 
             reminderTimer = new Timer();
@@ -83,7 +84,7 @@ namespace DiscordBot.Modules.Classes
                 SetReminderTimer();
             }
             if (!remindersPerUser.ContainsKey(memberId))
-                remindersPerUser.Add(memberId, new List<Reminder>());
+                remindersPerUser[memberId] = new List<Reminder>();
 
             var reminder = new Reminder()
             {
@@ -115,17 +116,17 @@ namespace DiscordBot.Modules.Classes
 
         public bool CancelReminder(ulong memberId, int reminderPos)
         {
-            if(remindersPerUser.ContainsKey(memberId))
+            if (remindersPerUser.ContainsKey(memberId))
             {
-                if(remindersPerUser[memberId].Count > reminderPos - 1)
+                if (remindersPerUser[memberId].Count > reminderPos - 1)
                 {
-                    Reminder reminder = remindersPerUser[memberId][reminderPos];
-                    if(remindersPerUser[memberId].Remove(reminder))
+                    Reminder reminder = remindersPerUser[memberId][reminderPos - 1];
+                    if (remindersPerUser[memberId].Remove(reminder))
                     {
                         if (remindersPerUser[memberId].Count == 0)
-                            remindersPerUser.Remove(memberId);
+                            remindersPerUser.TryRemove(memberId, out var b);
 
-                        if(reminders[reminder.scheduled].Remove(reminder))
+                        if (reminders[reminder.scheduled].Remove(reminder))
                         {
                             if (reminders[reminder.scheduled].Count == 0)
                                 reminders.Remove(reminder.scheduled);
@@ -174,7 +175,7 @@ namespace DiscordBot.Modules.Classes
 
                 remindersPerUser[reminder.userId].Remove(reminder);
                 if (remindersPerUser[reminder.userId].Count == 0)
-                    remindersPerUser.Remove(reminder.userId);
+                    remindersPerUser.Remove(reminder.userId, out var b);
             }
 
         }

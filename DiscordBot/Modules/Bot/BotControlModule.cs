@@ -223,7 +223,7 @@ namespace DiscordBot.Modules
                     Log.Info($"{ctx.Member.Username}#{ctx.Member.Discriminator} deleted the setting {setting}.");
                 }
                 else
-                    await ctx.RespondAsync("No such flag exists.");
+                    await ctx.RespondAsync("No such setting exists.");
             }
             else
                 await ctx.RespondAsync("Cancelled.");
@@ -345,6 +345,14 @@ namespace DiscordBot.Modules
         public async Task Quit(CommandContext ctx)
         {
             await ctx.RespondAsync("Byebye!");
+            Program.quitToken.Cancel();
+        }
+
+        [Command("reboot"), Aliases("Restart"), Description("Restarts the bot."), RequireOwner]
+        public async Task Restart(CommandContext ctx)
+        {
+            await ctx.RespondAsync("Rebooting...");
+            Program.reboot = true;
             Program.quitToken.Cancel();
         }
 

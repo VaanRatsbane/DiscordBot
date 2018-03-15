@@ -206,7 +206,7 @@ namespace DiscordBot
         /// <returns><c>true</c> if the value was removed, <c>false</c> if otherwise.</returns>
         public bool DeleteValue(string value)
         {
-            if (flags.ContainsKey(value))
+            if (values.ContainsKey(value))
             {
                 values.TryRemove(value, out string s);
                 return true;
