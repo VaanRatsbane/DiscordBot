@@ -12,6 +12,9 @@ using DSharpPlus.Entities;
 using System.Net;
 using DiscordBot.Modules.API.Classes;
 using Newtonsoft.Json;
+using QueryMaster.GameServer;
+using QueryMaster;
+using System.Linq;
 
 namespace DiscordBot.Modules
 {
@@ -188,6 +191,43 @@ namespace DiscordBot.Modules
             finally
             {
                 client.Dispose();
+            }
+        }
+
+        [Command("tf2server"), Description("Information about the TF2 server.")]
+        public async Task Tf2Server(CommandContext ctx)
+        {
+            using (var server = ServerQuery.GetServerInstance((Game)440, "54.36.163.202", 27015, throwExceptions: false, retries: 4, sendTimeout: 4000, receiveTimeout: 4000))
+            {
+                var serverInfo = server.GetInfo();
+                var players = server.GetPlayers();
+                if (serverInfo == null || players == null)
+                    await ctx.RespondAsync("Failed to reach the server.");
+                else
+                {
+                    DiscordEmbed embed = new DiscordEmbedBuilder()
+                        .WithAuthor(serverInfo.Name, "steam://connect/54.36.163.202:27015/")
+                        .AddField("Map", $"{serverInfo.Map}")
+                        .AddField("Players", $"{serverInfo.Players}/{serverInfo.MaxPlayers}")
+                        .WithColor(DiscordColor.Orange)
+                        .WithFooter($"Answered in {serverInfo.Ping}ms");
+
+                    if(serverInfo.Players > 0)
+                    {
+                        List<PlayerInfo> playerList = new List<PlayerInfo>();
+                        foreach (var player in players)
+                            playerList.Add(player);
+                        playerList = playerList.OrderByDescending(o => o.Score).ToList();
+
+                        string halloffame = "";
+                        for (int i = 0; i < serverInfo.Players && i < 3; i++)
+                            halloffame += $"{i + 1} - {playerList[i].Score} points - {playerList[i].Name}\n";
+
+                        embed = new DiscordEmbedBuilder(embed)
+                            .AddField("Top 3 players", halloffame);
+                    }
+                    await ctx.RespondAsync(embed: embed);
+                }
             }
         }
 

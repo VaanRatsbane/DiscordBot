@@ -14,6 +14,7 @@
 [Dd]ebug/
 [Dd]ebugPublic/
 [Ff]iles/
+[Rr]eferences/
 [Rr]elease/
 [Rr]eleases/
 x64/
@@ -70,6 +71,7 @@ artifacts/
 *.pidb
 *.svclog
 *.scc
+*.dll
 
 # Chutzpah Test files
 _Chutzpah*
@@ -260,3 +262,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+*.xml

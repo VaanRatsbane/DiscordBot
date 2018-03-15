@@ -5,6 +5,14 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+    <ItemGroup>
+	  <Reference Include="QueryMaster">
+		<HintPath>QueryMaster.dll</HintPath>
+		<SpecificVersion>False</SpecificVersion> 
+		<!-- You may set it to true if your dll has a specific version -->
+	  </Reference>
+	</ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="CoreCLR-NCalc" Version="2.1.3" />
     <PackageReference Include="DarkSkyApi" Version="3.3.0" />
@@ -15,6 +23,15 @@
     <PackageReference Include="Geocoding.Core" Version="4.0.1" />
     <PackageReference Include="Geocoding.Google" Version="4.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Ionic.BZip2">
+      <HintPath>Ionic.BZip2.dll</HintPath>
+    </Reference>
+    <Reference Include="QueryMaster">
+      <HintPath>References\QueryMaster.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

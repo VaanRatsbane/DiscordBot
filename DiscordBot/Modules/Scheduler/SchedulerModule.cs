@@ -27,7 +27,7 @@ namespace DiscordBot.Modules
 
                     DiscordEmbed embed = new DiscordEmbedBuilder()
                         .WithAuthor("Reminder created.")
-                        .WithDescription("You will be reminded at " + scheduled.ToString() + " (GMT)");
+                        .WithDescription("You will be reminded at " + scheduled.ToString("yyyy/MM/dd HH:mm:ss") + " (GMT+1)");
                     await ctx.RespondAsync(embed: embed);
                 }
             }
