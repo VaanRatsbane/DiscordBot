@@ -108,7 +108,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Cyan)
                 .WithTitle("Commands to poll information from the internet.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "weather, ff, tf2, ow, mc, reddit");
+                .AddField("Commands", "weather, ff, tf2, ow, mc, reddit, tf2server");
         }
 
         private static void BuildMath(string authorName, string authorIcon)

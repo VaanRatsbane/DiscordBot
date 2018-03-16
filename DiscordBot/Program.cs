@@ -62,6 +62,8 @@ namespace DiscordBot
             //CommandsNext
             {
                 var prefix = cfg.GetValue("prefix");
+                if (prefix == null)
+                    cfg.CreateValue("prefix", "!");
                 _commands = _discord.UseCommandsNext(new CommandsNextConfiguration
                 {
                     StringPrefix = prefix != null ? prefix : "!",
@@ -168,6 +170,7 @@ namespace DiscordBot
 
                     await scheduler.SolveReminders();
                     scheduler.SetReminderTimer();
+                    await _discord.UpdateStatusAsync(game: new DiscordGame($"{cfg.GetValue("prefix")}help to learn more."));
                 }
 
                 softbans.SolvePardons();

@@ -22,11 +22,18 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync(embed: HelpEmbeds.help);
         }
         
-        [Command("commands"), RequireOwner]
+        [Command("commands")]
         public async Task PrintAll(CommandContext ctx)
         {
             await ctx.Message.DeleteAsync();
-            await ctx.RespondAsync(embed: HelpEmbeds.commands);
+            if(ctx.Member.IsOwner)
+                await ctx.RespondAsync(embed: HelpEmbeds.commands);
+            else
+            {
+                var dm = await ctx.Member.CreateDmChannelAsync();
+                await dm.SendMessageAsync(embed: HelpEmbeds.commands);
+                await ctx.Message.DeleteAsync();
+            }
         }
 
         [Command("admin")]
