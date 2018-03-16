@@ -12,9 +12,8 @@ using DSharpPlus.Entities;
 using System.Net;
 using DiscordBot.Modules.API.Classes;
 using Newtonsoft.Json;
-using QueryMaster.GameServer;
-using QueryMaster;
 using System.Linq;
+using SourceQuery;
 
 namespace DiscordBot.Modules
 {
@@ -197,37 +196,33 @@ namespace DiscordBot.Modules
         [Command("tf2server"), Description("Information about the TF2 server.")]
         public async Task Tf2Server(CommandContext ctx)
         {
-            using (var server = ServerQuery.GetServerInstance((Game)440, "54.36.163.202", 27015, throwExceptions: false, retries: 4, sendTimeout: 4000, receiveTimeout: 4000))
+            var tf2serveraddress = Program.cfg.GetValue("tf2serverip");
+            var tf2serverport = Program.cfg.GetValue("tf2serverport");
+            if (tf2serveraddress == null)
             {
-                var serverInfo = server.GetInfo();
-                var players = server.GetPlayers();
-                if (serverInfo == null || players == null)
-                    await ctx.RespondAsync("Failed to reach the server.");
-                else
+                await ctx.RespondAsync("The server ip is not saved in the bot's memory, contact the owner.");
+            }
+            else
+            {
+                var gs = new GameServer(new IPEndPoint(IPAddress.Parse(tf2serveraddress), int.Parse(tf2serverport)));
+                DiscordEmbed embed = new DiscordEmbedBuilder()
+                    .WithAuthor(gs.Name)
+                    .WithDescription((gs.VACSecured ? "" : "Not ") + "VAC secured" + (gs.RequiresPassword ? " | Requires Password" : ""))
+                    .WithColor(new DiscordColor("FF6600"))
+                    .AddField("Map", gs.Map)
+                    .AddField("Players", $"{gs.PlayerCount}/{gs.MaximumPlayerCount}")
+                    .WithFooter($"{tf2serveraddress}:{tf2serverport}");
+
+                if(gs.PlayerCount > 0)
                 {
-                    DiscordEmbed embed = new DiscordEmbedBuilder()
-                        .WithAuthor(serverInfo.Name, "steam://connect/54.36.163.202:27015/")
-                        .AddField("Map", $"{serverInfo.Map}")
-                        .AddField("Players", $"{serverInfo.Players}/{serverInfo.MaxPlayers}")
-                        .WithColor(DiscordColor.Orange)
-                        .WithFooter($"Answered in {serverInfo.Ping}ms");
-
-                    if(serverInfo.Players > 0)
-                    {
-                        List<PlayerInfo> playerList = new List<PlayerInfo>();
-                        foreach (var player in players)
-                            playerList.Add(player);
-                        playerList = playerList.OrderByDescending(o => o.Score).ToList();
-
-                        string halloffame = "";
-                        for (int i = 0; i < serverInfo.Players && i < 3; i++)
-                            halloffame += $"{i + 1} - {playerList[i].Score} points - {playerList[i].Name}\n";
-
-                        embed = new DiscordEmbedBuilder(embed)
-                            .AddField("Top 3 players", halloffame);
-                    }
-                    await ctx.RespondAsync(embed: embed);
+                    List<PlayerInfo> players = gs.Players.OrderByDescending(o => o.Score).ToList();
+                    string highscores = "";
+                    for (int i = 0; i < players.Count && i < 3; i++)
+                        highscores += $"{i} - {players[i].Score} points | {players[i].Name}\n";
+                    embed = new DiscordEmbedBuilder().AddField("Top 3", highscores);
                 }
+
+                await ctx.RespondAsync(embed: embed);
             }
         }
 
