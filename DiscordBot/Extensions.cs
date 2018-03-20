@@ -1,7 +1,9 @@
 ﻿using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace DiscordBot
 {
@@ -41,6 +43,24 @@ namespace DiscordBot
         public static string GetFullIdentifier(this DiscordUser user)
         {
             return $"{user.Username}#{user.Discriminator}";
+        }
+
+        public static object XmlDeserializeFromString(this string objectData, Type type)
+        {
+            var serializer = new XmlSerializer(type);
+            object result;
+
+            using (TextReader reader = new StringReader(objectData))
+            {
+                result = serializer.Deserialize(reader);
+            }
+
+            return result;
+        }
+
+        public static decimal ToCurrency(this decimal currency)
+        {
+            return Math.Truncate(100 * currency) / 100;
         }
 
     }

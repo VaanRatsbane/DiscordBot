@@ -1,12 +1,16 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DiscordBot.Modules.Classes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace DiscordBot.Modules
 {
@@ -90,6 +94,52 @@ namespace DiscordBot.Modules
                     .AddField("Japan / South Korea", (now + new TimeSpan(+8, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true);
                 await ctx.RespondAsync(embed: embed);
             } catch(Exception e) { Console.WriteLine(e.ToString()); };
+        }
+
+        [Command("currencies"), Description("Shows current currency exchange rates. Updates daily.")]
+        public async Task GetCurrencies(CommandContext ctx)
+        {
+            if(Currencies.lastUpdated == null || Currencies.lastUpdated < DateTime.UtcNow)
+                Currencies.Update(ctx);
+
+            if (Currencies.embed != null)
+                await ctx.RespondAsync(embed: Currencies.embed);
+            
+        }
+        
+        [Command("convertcurrency"), Description("Converts one currency into another.")]
+        public async Task ConvertCurrency(CommandContext ctx, double value, string currency)
+        {
+            try
+            {
+                if (Currencies.currencies == null)
+                    Currencies.Update(ctx);
+
+                if (currency.ToUpper().Equals("EUR") || Currencies.HasCurrency(currency))
+                {
+                    var c = currency.ToUpper().Equals("EUR") ? 1 : Currencies.currencies[currency];
+                    DiscordEmbed embed = new DiscordEmbedBuilder()
+                        .WithAuthor(ctx.Client.CurrentUser.GetFullIdentifier())
+                        .WithTitle("Using " + currency.ToUpper() + " as a base. Last updated " + Currencies.lastUpdated)
+                        .WithDescription($"Converting {value} {currency.ToUpper()}")
+                        .WithFooter("Powered by http://www.ecb.europa.eu")
+                        .WithColor(DiscordColor.Gold);
+
+                    decimal exchangeRate = 1;
+                    if (!currency.ToUpper().Equals("EUR"))
+                    {
+                        exchangeRate = 1 / Currencies.currencies[currency.ToUpper()];
+                        embed = new DiscordEmbedBuilder(embed).AddField("EUR", (exchangeRate * (decimal)value).ToCurrency().ToString(), true);
+                    }
+                    foreach (var cur in Currencies.displayCurrencies)
+                        if (cur != currency.ToUpper() && Currencies.currencies.ContainsKey(cur))
+                            embed = new DiscordEmbedBuilder(embed).AddField(cur, (exchangeRate * Currencies.currencies[cur] * (decimal)value).ToCurrency().ToString(), true);
+                    await ctx.RespondAsync(embed: embed);
+                }
+                else
+                    await ctx.RespondAsync("Use one of the following currencies:\n" + Currencies.ListCurrencies());
+            }
+            catch (Exception e) { Console.WriteLine(e.ToString()); }
         }
 
     }

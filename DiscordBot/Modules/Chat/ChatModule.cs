@@ -1,16 +1,11 @@
-﻿using DiscordBot.Modules.API.Classes;
-using DiscordBot.Modules.Classes;
+﻿using DiscordBot.Modules.Classes;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DiscordBot.Modules
