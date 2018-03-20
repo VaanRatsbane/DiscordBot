@@ -87,7 +87,7 @@ namespace DiscordBot.Modules
                     .AddField("UK / PT", (now + new TimeSpan(-1, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
                     .AddField("USA East Coast", (now + new TimeSpan(-5, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
                     .AddField("USA West Coast", (now + new TimeSpan(-8, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
-                    .AddField("Japan", (now + new TimeSpan(+8, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true);
+                    .AddField("Japan / South Korea", (now + new TimeSpan(+8, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true);
                 await ctx.RespondAsync(embed: embed);
             } catch(Exception e) { Console.WriteLine(e.ToString()); };
         }

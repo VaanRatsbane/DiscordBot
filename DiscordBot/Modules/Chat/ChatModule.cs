@@ -1,9 +1,15 @@
-﻿using DiscordBot.Modules.Classes;
+﻿using DiscordBot.Modules.API.Classes;
+using DiscordBot.Modules.Classes;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Imgur.API.Authentication.Impl;
+using Imgur.API.Endpoints.Impl;
+using Imgur.API.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +17,8 @@ namespace DiscordBot.Modules
 {
     class ChatModule
     {
+
+        private static ImgurClient client;
 
         [Command("savequote"), Description("Saves a message for posterity.")]
         public async Task SaveQuote(CommandContext ctx, ulong messageId = 0, ulong channelId = 0)
@@ -177,7 +185,7 @@ namespace DiscordBot.Modules
         public async Task Dab(CommandContext ctx)
         {
             await ctx.Message.DeleteAsync();
-            await ctx.RespondAsync((await ctx.Guild.GetEmojiAsync(410860287852412928)));
+            await ctx.RespondAsync((await ctx.Guild.GetEmojiAsync(410860287852412928)).GetDiscordName());
         }
 
         [Command("cookie"), Description("Gives a cookie 🍪yum🍪")]
@@ -208,5 +216,27 @@ namespace DiscordBot.Modules
                     await ctx.RespondAsync($"{member.DisplayName} has sent {given} cookies and received {received} cookies! " + (received > given ? "How greedy!" : "How nice!"));
             }
         }
+
+        [Command("dog"), Aliases(new string[] { "doge", "pupper", "doggo" }), Description("woof")]
+        public async Task Dog(CommandContext ctx)
+        {
+            await SendImgurItem(ctx, Program.cfg.GetValue("dogimgur"));
+        }
+
+        private async Task SendImgurItem(CommandContext ctx, string album)
+        {
+            if(client == null)
+            {
+                client = new ImgurClient(Program.keys.GetKey("imgurclient"), Program.keys.GetKey("imgursecret"));
+            }
+
+            var endpoint = new GalleryEndpoint(client);
+            var images = await endpoint.GetGalleryAlbumAsync(album);
+            var count = images.ImagesCount;
+            var selected = Program.rng.Next(count);
+            var image = new List<IImage>(images.Images)[selected];
+            await ctx.RespondAsync(image.Animated ? image.Gifv : image.Link);
+        }
+
     }
 }
