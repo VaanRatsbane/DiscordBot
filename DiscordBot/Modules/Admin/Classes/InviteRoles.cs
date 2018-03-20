@@ -90,9 +90,12 @@ namespace DiscordBot.Modules.Classes
         public void RemoveRole(ulong id)
         {
             var temp = new List<ulong>();
+
+            lock (channelsToRoles)
             foreach (var pair in channelsToRoles)
                 if (pair.Value == id)
                     temp.Add(pair.Key);
+
             foreach (var key in temp)
                 if (channelsToRoles.TryRemove(key, out ulong value))
                     Log.Info("Role with ID " + value + " deleted, thus the association with channel with ID " + key + " was removed.");
@@ -110,6 +113,7 @@ namespace DiscordBot.Modules.Classes
 
             if(channelsLinkUsages != null)
             {
+                lock(channelsLinkUsages)
                 foreach(var pair in channelsLinkUsages)
                 {
                     if(temp.ContainsKey(pair.Key) && temp[pair.Key] > pair.Value)

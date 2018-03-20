@@ -27,30 +27,30 @@ namespace DiscordBot
 
         public static void Info(string text)
         {
-            Print(text, infoColor);
+            Print(text, infoColor, false);
         }
 
         public static void Input(string text)
         {
-            Print(text, inputColor);
+            Print(text, inputColor, false);
         }
 
         public static void Success(string text)
         {
-            Print(text, successColor);
+            Print(text, successColor, false);
         }
 
         public static void Warning(string text)
         {
-            Print(text, warningColor);
+            Print(text, warningColor, true);
         }
 
         public static void Error(string text)
         {
-            Print(text, errorColor);
+            Print(text, errorColor, true);
         }
 
-        private static void Print(string text, ConsoleColor color)
+        private static void Print(string text, ConsoleColor color, bool toChannel)
         {
 
             var datedText = "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + "] " + text;
@@ -61,7 +61,7 @@ namespace DiscordBot
                 Console.ForegroundColor = infoColor;
             }
 
-            if (_logChannel != null)
+            if (toChannel && _logChannel != null)
                 _logChannel.SendMessageAsync(text);
 
             if (Program.cfg != null && Program.cfg.FileLogging())

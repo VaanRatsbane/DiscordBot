@@ -83,18 +83,23 @@ namespace DiscordBot.Modules.Classes
             var guildText = Program.cfg.GetValue("guild");
             var guild = ulong.Parse(guildText);
             var guildObj = await Program._discord.GetGuildAsync(guild);
-            foreach(var pair in softbans)
-            {
-                if(pair.Value.HasExpired())
-                {
-                    var member = await guildObj.GetMemberAsync(pair.Key);
 
-                    if (member != null)
-                        Pardon(member);
-                    else //remove softban even if member isn't present
-                        softbans.Remove(pair.Key, out var ban);
-                }
+            var toRemove = new List<ulong>();
+            lock(softbans)
+            foreach(var pair in softbans)
+                if(pair.Value.HasExpired())
+                    toRemove.Add(pair.Key);
+
+            foreach (var id in toRemove)
+            {
+                var member = await guildObj.GetMemberAsync(id);
+
+                if (member != null)
+                    Pardon(member);
+                else //remove softban even if member isn't present
+                    softbans.Remove(id, out var ban);
             }
+
             CalculateNextUnban();
             NextTimer();
         }
@@ -164,6 +169,7 @@ namespace DiscordBot.Modules.Classes
             ulong id = 0;
             TimeSpan? smallest = null;
 
+            lock(softbans)
             foreach(var pair in softbans)
             {
                 var ban = pair.Value;
@@ -190,6 +196,7 @@ namespace DiscordBot.Modules.Classes
         public SortedList<DateTime, ulong> Listing()
         {
             var list = new SortedList<DateTime, ulong>();
+            lock(softbans)
             foreach (var pair in softbans)
                 list.Add(pair.Value.GetLimit(), pair.Key);
             return list;

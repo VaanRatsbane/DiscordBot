@@ -48,7 +48,6 @@ namespace DiscordBot
         static async Task MainAsync(string[] args)
         {
             Log.Info("Booting...");
-            Log.Info("Derp");
             Load(); //Load files
 
             //Discord Client

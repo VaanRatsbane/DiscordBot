@@ -34,6 +34,7 @@ namespace DiscordBot
 
                 if(modules.Count == isLoaded.Count)
                 {
+                    lock(isLoaded)
                     foreach (var pair in isLoaded)
                         if (!modules.Contains(pair.Key))
                             throw new Exception("Wrong module flags. Resetting.");
@@ -83,6 +84,7 @@ namespace DiscordBot
         public string Print()
         {
             string result = "";
+            lock(isLoaded)
             foreach (var pair in isLoaded)
                 result += "[" + (pair.Value ? "ON" : "OFF") + "]" + pair.Key + " | ";
             return result;

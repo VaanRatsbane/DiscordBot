@@ -143,16 +143,24 @@ namespace DiscordBot.Modules.Classes
 
         public async Task SolveReminders()
         {
+            var toSend = new List<List<Reminder>>();
+
+            lock (reminders)
             foreach(var pair in reminders)
             {
-                if (pair.Key < DateTime.Now)
+                if (pair.Key <= DateTime.Now)
                 {
-                    var guild = await Program._discord.GetGuildAsync(ulong.Parse(Program.cfg.GetValue("guild")));
-                    await SendReminder(pair.Value, guild, isLate: true);
+                    toSend.Add(pair.Value);
                     reminders.Remove(pair.Key);
                 }
                 else
                     break;
+            }
+            if (toSend.Count > 0)
+            {
+                var guild = await Program._discord.GetGuildAsync(ulong.Parse(Program.cfg.GetValue("guild")));
+                foreach(var list in toSend)
+                    await SendReminder(list, guild);
             }
         }
 
