@@ -213,13 +213,14 @@ namespace DiscordBot.Modules
                     .AddField("Players", $"{gs.PlayerCount}/{gs.MaximumPlayerCount}")
                     .WithFooter($"{tf2serveraddress}:{tf2serverport}");
 
-                if(gs.PlayerCount > 0)
+                if(gs.players != null && gs.players.Count > 0)
                 {
                     List<PlayerInfo> players = gs.Players.OrderByDescending(o => o.Score).ToList();
                     string highscores = "";
                     for (int i = 0; i < players.Count && i < 3; i++)
                         highscores += $"{i} - {players[i].Score} points | {players[i].Name}\n";
-                    embed = new DiscordEmbedBuilder().AddField("Top 3", highscores);
+                    embed = new DiscordEmbedBuilder(embed).AddField("Top 3", highscores);
+					Console.WriteLine(highscores);
                 }
 
                 await ctx.RespondAsync(embed: embed);

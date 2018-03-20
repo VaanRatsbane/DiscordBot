@@ -158,11 +158,12 @@ namespace DiscordBot.Modules.Classes
 
         private async Task SendReminder(List<Reminder> reminders, DiscordGuild guild, bool isLate = false)
         {
+            var offset = DateTimeOffset.Now.Offset;
             DiscordEmbed embed = new DiscordEmbedBuilder()
                 .WithAuthor($"{Program._discord.CurrentUser.Username}#{Program._discord.CurrentUser.Discriminator}", icon_url: Program._discord.CurrentUser.AvatarUrl)
                 .WithTitle("Reminder")
                 .WithDescription(isLate ? "I apologize for not delivering the message on time, here you go:" : "As scheduled, here is your reminder:")
-                .WithFooter("As scheduled on " + reminders[0].scheduled.ToString("yyyy-MM-dd HH:mm:ss") + " (GMT)");
+                .WithFooter("As scheduled on " + reminders[0].created.ToString("yyyy-MM-dd HH:mm:ss") + $" (UTC{(offset.Hours < 0 ? " - " : " + ")}{offset.TotalHours.ToString("0.00")})");
 
             foreach(var reminder in reminders)
             {

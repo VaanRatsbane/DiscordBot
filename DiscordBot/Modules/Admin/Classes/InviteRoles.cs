@@ -105,8 +105,10 @@ namespace DiscordBot.Modules.Classes
                 if (!i.IsRevoked)
                 {
                     var uses = temp.ContainsKey(i.Channel.Id) ? temp[i.Channel.Id] : 0;
-                    temp[i.Channel.Id] = uses + i.Uses;
+                    temp[i.Channel.Id] = uses + i.Uses; //accumulating all invites of a channel
                 }
+
+            ulong returnValue = 0;
 
             if(channelsLinkUsages != null)
             {
@@ -115,14 +117,16 @@ namespace DiscordBot.Modules.Classes
                     if(temp.ContainsKey(pair.Key) && temp[pair.Key] > pair.Value)
                     {
                         if (channelsToRoles.ContainsKey(pair.Key))
-                            return channelsToRoles[pair.Key];
-                        else return 0;
+                        {
+                            returnValue = channelsToRoles[pair.Key];
+                            break;
+                        }
                     }
                 }
             }
 
             channelsLinkUsages = temp;
-            return 0;
+            return returnValue;
         }
 
     }
