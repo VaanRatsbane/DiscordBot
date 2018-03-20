@@ -16,7 +16,7 @@ namespace DiscordBot.Modules.Classes
         const string REMINDERS_PATH = "Files/Scheduler/reminders.json";
         const string REMINDERS_PERUSER_PATH = "Files/Scheduler/remindersperuser.json";
 
-        private SortedList<DateTime, List<Reminder>> reminders;
+        private SortedList<DateTimeOffset, List<Reminder>> reminders;
         private ConcurrentDictionary<ulong, List<Reminder>> remindersPerUser;
         private Timer reminderTimer;
 
@@ -28,7 +28,7 @@ namespace DiscordBot.Modules.Classes
             try
             {
                 var json = File.ReadAllText(REMINDERS_PATH);
-                reminders = JsonConvert.DeserializeObject<SortedList<DateTime, List<Reminder>>>(json);
+                reminders = JsonConvert.DeserializeObject<SortedList<DateTimeOffset, List<Reminder>>>(json);
                 json = File.ReadAllText(REMINDERS_PERUSER_PATH);
                 remindersPerUser = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, List<Reminder>>>(json);
 
@@ -37,7 +37,7 @@ namespace DiscordBot.Modules.Classes
             catch
             {
                 Log.Warning("Couldn't load schedules. Initializing...");
-                reminders = new SortedList<DateTime, List<Reminder>>();
+                reminders = new SortedList<DateTimeOffset, List<Reminder>>();
                 remindersPerUser = new ConcurrentDictionary<ulong, List<Reminder>>();
             }
 
@@ -76,9 +76,9 @@ namespace DiscordBot.Modules.Classes
             SetReminderTimer();
         }
 
-        public void CreateReminder(ulong memberId, string message, DateTime scheduled)
+        public void CreateReminder(ulong memberId, string message, DateTimeOffset scheduled)
         {
-            if (!reminders.ContainsKey(scheduled))
+            if (!reminders.ContainsKey(scheduled.ToLocalTime().Date))
             {
                 reminders.Add(scheduled, new List<Reminder>());
                 SetReminderTimer();
@@ -197,7 +197,7 @@ namespace DiscordBot.Modules.Classes
             public ulong userId;
             public string message;
             public DateTime created;
-            public DateTime scheduled;
+            public DateTimeOffset scheduled;
         }
 
     }

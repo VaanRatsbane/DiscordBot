@@ -60,7 +60,7 @@ namespace DiscordBot.Modules
             await ctx.RespondAsync("I've been running since " + (DateTime.Now - p.StartTime).ToString("yyyy-MM-dd HH:mm:ss") + " (since " + p.StartTime.ToString("yyyy-MM-dd HH:mm:ss") + ")");
         }
 
-        [Command("server"), Description("Information about this server.")]
+        [Command("server"), Aliases("guild"), Description("Information about this server.")]
         public async Task Server(CommandContext ctx)
         {
             var embed = new DiscordEmbedBuilder()
@@ -71,6 +71,21 @@ namespace DiscordBot.Modules
                 .AddField("Region", ctx.Guild.RegionId)
                 .AddField("Users", ctx.Guild.MemberCount.ToString());
 
+            await ctx.RespondAsync(embed: embed);
+        }
+
+        [Command("time"), Aliases(new string[]{"timezone", "timezones"}), Description("Various timezones.")]
+        public async Task Timezones(CommandContext ctx)
+        {
+            var now = DateTime.Now;
+            var embed = new DiscordEmbedBuilder()
+                .WithAuthor(ctx.Client.CurrentUser.GetFullIdentifier(), null, ctx.Client.CurrentUser.AvatarUrl)
+                .WithTitle("Times around the world")
+                .WithDescription("Times are in UTC format (no summer hours)")
+                .AddField("UK / PT", new DateTimeOffset(now, new TimeSpan(0, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
+                .AddField("USA East Coast", new DateTimeOffset(now, new TimeSpan(-5, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
+                .AddField("USA West Coast", new DateTimeOffset(now, new TimeSpan(-7, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
+                .AddField("Japan", new DateTimeOffset(now, new TimeSpan(+9, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true);
             await ctx.RespondAsync(embed: embed);
         }
 

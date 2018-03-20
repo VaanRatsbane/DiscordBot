@@ -108,8 +108,6 @@ namespace DiscordBot.Modules.Classes
                     temp[i.Channel.Id] = uses + i.Uses; //accumulating all invites of a channel
                 }
 
-            ulong returnValue = 0;
-
             if(channelsLinkUsages != null)
             {
                 foreach(var pair in channelsLinkUsages)
@@ -117,16 +115,15 @@ namespace DiscordBot.Modules.Classes
                     if(temp.ContainsKey(pair.Key) && temp[pair.Key] > pair.Value)
                     {
                         if (channelsToRoles.ContainsKey(pair.Key))
-                        {
-                            returnValue = channelsToRoles[pair.Key];
-                            break;
-                        }
+                            return channelsToRoles[pair.Key];
+                        else
+                            return 0;
                     }
                 }
             }
 
             channelsLinkUsages = temp;
-            return returnValue;
+            return 0;
         }
 
     }

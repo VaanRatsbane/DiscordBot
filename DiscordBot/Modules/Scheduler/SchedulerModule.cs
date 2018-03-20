@@ -18,8 +18,8 @@ namespace DiscordBot.Modules
         {
             try
             {
-                DateTime scheduled = DateTime.Parse(date);
-                if(scheduled < DateTime.Now)
+                DateTimeOffset scheduled = DateTimeOffset.Parse(date);
+                if(scheduled.ToLocalTime() < DateTime.Now)
                     await ctx.RespondAsync("I can't remind you in the past!");
                 else
                 {
@@ -27,7 +27,7 @@ namespace DiscordBot.Modules
 
                     DiscordEmbed embed = new DiscordEmbedBuilder()
                         .WithAuthor("Reminder created.")
-                        .WithDescription("You will be reminded at " + scheduled.ToString("yyyy/MM/dd HH:mm:ss") + " (GMT+1)");
+                        .WithDescription("You will be reminded at " + scheduled.ToString("yyyy/MM/dd HH:mm:ss \"UTC\"zzz"));
                     await ctx.RespondAsync(embed: embed);
                 }
             }

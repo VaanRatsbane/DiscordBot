@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DSharpPlus.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -35,6 +36,11 @@ namespace DiscordBot
                     }
                 }
             return -1;
+        }
+
+        public static string GetFullIdentifier(this DiscordUser user)
+        {
+            return $"{user.Username}#{user.Discriminator}";
         }
 
     }

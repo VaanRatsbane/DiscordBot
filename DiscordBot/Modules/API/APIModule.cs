@@ -213,7 +213,7 @@ namespace DiscordBot.Modules
                     .AddField("Players", $"{gs.PlayerCount}/{gs.MaximumPlayerCount}")
                     .WithFooter($"{tf2serveraddress}:{tf2serverport}");
 
-                if(gs.players != null && gs.players.Count > 0)
+                if(gs.Players != null && gs.Players.Count > 0)
                 {
                     List<PlayerInfo> players = gs.Players.OrderByDescending(o => o.Score).ToList();
                     string highscores = "";
