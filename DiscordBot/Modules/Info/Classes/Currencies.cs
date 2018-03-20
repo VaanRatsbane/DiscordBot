@@ -59,7 +59,7 @@ namespace DiscordBot.Modules.Classes
         
         public static string ListCurrencies()
         {
-            return String.Join(' ', displayCurrencies);
+            return String.Join(' ', currencies.Keys);
         }
 
     }
