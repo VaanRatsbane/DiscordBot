@@ -9,7 +9,6 @@ using Hef.Math;
 
 namespace DiscordBot.Modules
 {
-    [Group("math"), Description("Commands that calculate mathematical operations.")]
     class MathModule
     {
 
