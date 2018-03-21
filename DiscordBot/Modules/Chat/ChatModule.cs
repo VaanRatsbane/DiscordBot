@@ -1,15 +1,11 @@
-﻿using DiscordBot.Modules.Chat.Classes;
-using DiscordBot.Modules.Classes;
+﻿using DiscordBot.Modules.Classes;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace DiscordBot.Modules
@@ -216,49 +212,10 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("trbmb"), Aliases("thatreally"), Description("That really blanks my blank.")]
-        public async Task ThatReally(CommandContext ctx)
-        {
-            using(WebClient client = new WebClient())
-            {
-                var result = client.DownloadString("http://api.chew.pro/trbmb");
-                await ctx.RespondAsync(result.Substring(2, result.Length - 4));
-            }
-        }
-
         [Command("dog"), Aliases(new string[] { "doge", "pupper", "doggo" }), Description("woof")]
         public async Task Dog(CommandContext ctx)
         {
-            //await SendImgurItem(ctx, Program.cfg.GetValue("dogimgur"));
-            using (WebClient client = new WebClient())
-            {
-                var json = client.DownloadString(@"https://dog.ceo/api/breeds/image/random");
-                var doggo = JsonConvert.DeserializeObject<ChatPulls>(json);
-                if(doggo.status.ToLower().Equals("success"))
-                    await ctx.RespondAsync(doggo.message);
-            }
-        }
-
-        [Command("cat"), Aliases(new string[] { "kitty" }), Description("meow")]
-        public async Task Cat(CommandContext ctx)
-        {
-            WebClient client = null;
-            try
-            {
-                client = new WebClient();
-                var xml = client.DownloadString(@"http://thecatapi.com/api/images/get?format=xml&results_per_page=1");
-                var result = xml.XmlDeserializeFromString(typeof(Kitty.response)) as Kitty.response;
-                await ctx.RespondAsync(result.data.images.image.url);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            finally
-            {
-                if (client != null)
-                    client.Dispose();
-            }
+            await SendImgurItem(ctx, Program.cfg.GetValue("dogimgur"));
         }
 
         private async Task SendImgurItem(CommandContext ctx, string album)
