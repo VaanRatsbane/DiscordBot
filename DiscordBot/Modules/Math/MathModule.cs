@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using NCalc;
 using DSharpPlus.Entities;
+using Hef.Math;
 
 namespace DiscordBot.Modules
 {
@@ -13,21 +13,27 @@ namespace DiscordBot.Modules
     class MathModule
     {
 
-        [Command("calc"), Description("Calculates a formula. Rounded to 2 decimal places. Check https://archive.codeplex.com/?p=ncalc for documentation.")]
+        static Interpreter interpreter;
+
+        [Command("calc"), Description("Calculates a formula. Check https://github.com/fsegaud/Hef.Math.Interpreter#annex---handled-operations for syntax.")]
         public async Task Add(CommandContext ctx, [RemainingText]string formula)
         {
-            var expr = new Expression(formula);
-            string result = expr.Evaluate().ToString();
-
-            if(double.TryParse(result, out double number))
+            try
             {
-                double rounded = Math.Round(number, 2);
-                if ((rounded > 0 && rounded < number) || (rounded < 0 && rounded > number))
-                    rounded += rounded > 0 ? 0.01 : -0.01;
-                result = rounded.ToString();
+                formula = formula.ToLower();
+
+                if (formula.StartsWith("setv"))
+                    return;
+
+                if (interpreter == null) interpreter = new Interpreter();
+                double result = interpreter.Calculate(formula);
+
+                await ctx.RespondAsync(result.ToString());
             }
-            
-            await ctx.RespondAsync(result);
+            catch
+            {
+
+            }
         }
 
         [Command("rolldice"), Description("Rolls a dice between two numbers. 6sided by default.")]
@@ -72,7 +78,7 @@ namespace DiscordBot.Modules
 
                 await ctx.RespondAsync(embed: embed);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 await ctx.RespondAsync("That is not a valid binary number.");
             }
@@ -102,7 +108,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("That is not a valid binary number.");
             }
         }
-                
+
         [Command("octvalues"), Description("Gets an octal number in other bases.")]
         public async Task OctalValues(CommandContext ctx, string oct)
         {
