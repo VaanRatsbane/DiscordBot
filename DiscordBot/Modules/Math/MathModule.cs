@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
-using Hef.Math;
 
 namespace DiscordBot.Modules
 {
@@ -13,28 +12,22 @@ namespace DiscordBot.Modules
     class MathModule
     {
 
-        static Interpreter interpreter;
+        //[Command("calc"), Description("Calculates a formula. Rounded to 2 decimal places. Check https://archive.codeplex.com/?p=ncalc for documentation.")]
+        //public async Task Add(CommandContext ctx, [RemainingText]string formula)
+        //{
+        //    var expr = new Expression(formula);
+        //    string result = expr.Evaluate().ToString();
 
-        [Command("calc"), Description("Calculates a formula. Check https://github.com/fsegaud/Hef.Math.Interpreter#annex---handled-operations for syntax.")]
-        public async Task Add(CommandContext ctx, [RemainingText]string formula)
-        {
-            try
-            {
-                formula = formula.ToLower();
-
-                if (formula.StartsWith("setv"))
-                    return;
-
-                if (interpreter == null) interpreter = new Interpreter();
-                double result = interpreter.Calculate(formula);
-
-                await ctx.RespondAsync(result.ToString());
-            }
-            catch
-            {
-                
-            }
-        }
+        //    if(double.TryParse(result, out double number))
+        //    {
+        //        double rounded = Math.Round(number, 2);
+        //        if ((rounded > 0 && rounded < number) || (rounded < 0 && rounded > number))
+        //            rounded += rounded > 0 ? 0.01 : -0.01;
+        //        result = rounded.ToString();
+        //    }
+            
+        //    await ctx.RespondAsync(result);
+        //}
 
         [Command("rolldice"), Description("Rolls a dice between two numbers. 6sided by default.")]
         public async Task RollDice(CommandContext ctx, int start = 1, int end = 6)
