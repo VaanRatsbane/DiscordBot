@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Hef.Math;
+using DiscordBot.Modules.Math.Classes;
+using System.IO;
 
 namespace DiscordBot.Modules
 {
@@ -30,6 +32,24 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync(result.ToString());
             }
             catch
+            {
+
+            }
+        }
+
+        [Command("plot")]
+        public async Task Plot(CommandContext ctx)
+        {
+            try
+            {
+                Graphs.DrawGraph(interpreter, "x * x", -10, 10, -10, 10);
+                using (FileStream fs = new FileStream("tempGraph.bmp", FileMode.Open))
+                {
+                    await ctx.RespondWithFileAsync(fs);
+                }
+                File.Delete("tempGraph.bmp");
+            }
+            catch(Exception)
             {
 
             }
