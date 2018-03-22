@@ -14,37 +14,46 @@ namespace DiscordBot.Modules.Math.Classes
     public class Graphs
     {
 
-        public static void DrawGraph(Interpreter interpreter, string formula, int xMin, int xMax, int yMin, int yMax)
+        public static void DrawGraph(Interpreter interpreter, string formula, double xMin, double xMax, double yMin, double yMax)
         {
-            int width = 500;
-            int height = 500;
+            int width = 300;
+            int height = 300;
 
             using (Image<Rgba32> image = new Image<Rgba32>(width, height))
             {
                 image.Mutate(x => x
                     .BackgroundColor(Rgba32.White));
-                
+
+                var points = new List<PointF>();
+
+                for (int i = 0; i <= width; i++) //draw graph
+                {
+                    var x = (0.0 + xMax - xMin) / width * i + xMin;
+                    var replaced = formula.Replace("x", $"({x.ToString()})").Replace("-", "±");
+                    var y = interpreter.Calculate(replaced);
+                    var j = -1 * (int)((y - yMax) * height / (yMax - yMin));
+
+                    if (j >= 0 && j <= height)
+                        points.Add(new PointF(i, j));
+                }
+
+                image.Mutate(x => x
+                    .DrawLines(Rgba32.Blue, 1, points.ToArray()));
+
                 if (yMin < 0 && yMax > 0) //draw horizontal axis if in view
                 {
-                    var horizontalLine = new PointF[] { new PointF(0, height - (-yMin * height / (yMax - yMin))) };
+                    var horizontalLine = new PointF[] { new PointF(0, (int)(height - (-yMin * height / (yMax - yMin)))),
+                                                            new PointF(500, height - (int)((-yMin * height / (yMax - yMin))))};
                     image.Mutate(x => x
                         .DrawLines(Rgba32.Black, 1, horizontalLine));
                 }
 
-                if(xMin < 0 && xMax > 0) //draw vertical axis if in view
+                if (xMin < 0 && xMax > 0) //draw vertical axis if in view
                 {
-                    var verticalLine = new PointF[] { new PointF(0, width - (-xMin * width / (xMax - xMin))) };
+                    var verticalLine = new PointF[] { new PointF((int)(width - (-xMin * width/ (xMax - xMin))), 0),
+                                                          new PointF(width - (int)((-xMin * width / (xMax - xMin))), 500)};
                     image.Mutate(x => x
                         .DrawLines(Rgba32.Black, 1, verticalLine));
-                }
-
-                for(int i = 0; i < width; i++) //draw graph
-                {
-                    var x = i * width / (xMax - xMin);
-                    var y = (int)interpreter.Calculate(formula.Replace("x", x.ToString()));
-                    var j = y * (yMax - yMin) / height;
-
-                    image[i, j] = Rgba32.Blue;
                 }
 
                 using (var fs = new FileStream("tempGraph.bmp", FileMode.Append))

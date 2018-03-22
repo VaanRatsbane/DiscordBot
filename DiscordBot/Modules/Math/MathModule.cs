@@ -37,12 +37,12 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("plot")]
-        public async Task Plot(CommandContext ctx)
+        [Command("graph"), Aliases("plot"), Description("Draws a 2D graph based on a given formula. Use x as your variable. Check https://github.com/fsegaud/Hef.Math.Interpreter#annex---handled-operations for syntax.")]
+        public async Task Plot(CommandContext ctx, string formula, int viewXMin = -10, int viewXMax = 10, int viewYMin = -10, int viewYMax = 10)
         {
             try
             {
-                Graphs.DrawGraph(interpreter, "x * x", -10, 10, -10, 10);
+                Graphs.DrawGraph(interpreter, formula, viewXMin, viewXMax, viewYMin, viewYMax);
                 using (FileStream fs = new FileStream("tempGraph.bmp", FileMode.Open))
                 {
                     await ctx.RespondWithFileAsync(fs);
