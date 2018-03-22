@@ -53,7 +53,7 @@ namespace DiscordBot
                 .AddField("Chat", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab, cookie, cookies, dog")
                 .AddField("Info", "about, status, server, uptime, time, currency, convertcurrency")
                 .AddField("API", "weather, ff, tf2, ow, mc, reddit, tf2server")
-                .AddField("Math", "calc, rolldice, decvalues, octvalues, binvalues, hexvalues")
+                .AddField("Math", "calc, graph, rolldice, decvalues, octvalues, binvalues, hexvalues")
                 .AddField("Tools", "color, uncolor, listcolors, tinyurl, lmgtfy, togethertube")
                 .AddField("Scheduler", "remindme, listreminders, cancelreminder");
         }
@@ -118,7 +118,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Wheat)
                 .WithTitle("Do your homework.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "calc, rolldice, decvalues, octvalues, binvalues, hexvalues");
+                .AddField("Commands", "calc, graph, rolldice, decvalues, octvalues, binvalues, hexvalues");
         }
 
         private static void BuildTools(string authorName, string authorIcon)

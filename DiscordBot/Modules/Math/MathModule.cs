@@ -31,27 +31,33 @@ namespace DiscordBot.Modules
 
                 await ctx.RespondAsync(result.ToString());
             }
-            catch
+            catch (Exception e)
             {
-
+                Console.WriteLine(e.ToString());
             }
         }
 
         [Command("graph"), Aliases("plot"), Description("Draws a 2D graph based on a given formula. Use x as your variable. Check https://github.com/fsegaud/Hef.Math.Interpreter#annex---handled-operations for syntax.")]
-        public async Task Plot(CommandContext ctx, string formula, int viewXMin = -10, int viewXMax = 10, int viewYMin = -10, int viewYMax = 10)
+        public async Task Plot(CommandContext ctx, [Description("The function to render. Ex: x^2")]string formula,
+                                                   [Description("The low X viewport value.")] int viewXMin = -10,
+                                                   [Description("The high X viewport value.")] int viewXMax = 10,
+                                                   [Description("The low Y viewport value.")] int viewYMin = -10,
+                                                   [Description("The high Y viewport value.")] int viewYMax = 10)
         {
             try
             {
+                if (interpreter == null) interpreter = new Interpreter();
+
                 Graphs.DrawGraph(interpreter, formula, viewXMin, viewXMax, viewYMin, viewYMax);
-                using (FileStream fs = new FileStream("tempGraph.bmp", FileMode.Open))
+                using (FileStream fs = new FileStream("_g.png", FileMode.Open))
                 {
                     await ctx.RespondWithFileAsync(fs);
                 }
-                File.Delete("tempGraph.bmp");
+                File.Delete("_g.png");
             }
-            catch(Exception)
+            catch(Exception e)
             {
-
+                Console.WriteLine(e.ToString());
             }
         }
 
@@ -70,7 +76,7 @@ namespace DiscordBot.Modules
             string oct = Convert.ToString(dec, 8);
 
             var embed = new DiscordEmbedBuilder()
-                .WithAuthor($"{ctx.Client.CurrentUser.Username}#{ctx.Client.CurrentUser.Discriminator}")
+                .WithAuthor($"{ctx.Client.CurrentUser.GetFullIdentifier()}")
                 .AddField("Decimal", dec.ToString())
                 .AddField("Binary", bin)
                 .AddField("Hexadecimal", hex)
@@ -89,7 +95,7 @@ namespace DiscordBot.Modules
                 string oct = Convert.ToString(dec, 8);
 
                 var embed = new DiscordEmbedBuilder()
-                    .WithAuthor($"{ctx.Client.CurrentUser.Username}#{ctx.Client.CurrentUser.Discriminator}")
+                    .WithAuthor($"{ctx.Client.CurrentUser.GetFullIdentifier()}")
                     .AddField("Decimal", dec.ToString())
                     .AddField("Binary", bin)
                     .AddField("Hexadecimal", hex)
@@ -114,7 +120,7 @@ namespace DiscordBot.Modules
                 string oct = Convert.ToString(dec, 8);
 
                 var embed = new DiscordEmbedBuilder()
-                    .WithAuthor($"{ctx.Client.CurrentUser.Username}#{ctx.Client.CurrentUser.Discriminator}")
+                    .WithAuthor($"{ctx.Client.CurrentUser.GetFullIdentifier()}")
                     .AddField("Decimal", dec.ToString())
                     .AddField("Binary", bin)
                     .AddField("Hexadecimal", hex)
@@ -138,7 +144,7 @@ namespace DiscordBot.Modules
                 string hex = dec.ToString("X");
 
                 var embed = new DiscordEmbedBuilder()
-                    .WithAuthor($"{ctx.Client.CurrentUser.Username}#{ctx.Client.CurrentUser.Discriminator}")
+                    .WithAuthor($"{ctx.Client.CurrentUser.GetFullIdentifier()}")
                     .AddField("Decimal", dec.ToString())
                     .AddField("Binary", bin)
                     .AddField("Hexadecimal", hex)

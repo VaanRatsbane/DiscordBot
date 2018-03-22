@@ -56,9 +56,9 @@ namespace DiscordBot.Modules.Math.Classes
                         .DrawLines(Rgba32.Black, 1, verticalLine));
                 }
 
-                using (var fs = new FileStream("tempGraph.bmp", FileMode.Append))
+                using (var fs = new FileStream("_g.png", FileMode.Append))
                 {
-                    image.Save(fs, ImageFormats.Bmp);
+                    image.Save(fs, ImageFormats.Png);
                 }
 
             }
