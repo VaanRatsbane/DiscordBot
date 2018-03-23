@@ -89,12 +89,12 @@ namespace DiscordBot.Modules.Classes
             if (softbans.Count > 0)
             {
                 var enumerator = softbans.GetEnumerator();
-                do
+                while (enumerator.MoveNext())
                 {
                     var pair = enumerator.Current;
                     if (pair.Value.HasExpired())
                         toRemove.Add(pair.Key);
-                } while (enumerator.MoveNext());
+                }
             }
 
             foreach (var id in toRemove)
@@ -180,7 +180,7 @@ namespace DiscordBot.Modules.Classes
             {
                 var enumerator = softbans.GetEnumerator();
 
-                do
+                while (enumerator.MoveNext())
                 {
                     var pair = enumerator.Current;
                     var ban = pair.Value;
@@ -190,7 +190,7 @@ namespace DiscordBot.Modules.Classes
                         smallest = limit - DateTime.Now;
                         id = pair.Key;
                     }
-                } while (enumerator.MoveNext());
+                }
             }
 
             nextUnbanID = id;
@@ -211,11 +211,11 @@ namespace DiscordBot.Modules.Classes
             if (softbans.Count > 0)
             {
                 var enumerator = softbans.GetEnumerator();
-                do
+                while (enumerator.MoveNext())
                 {
                     var pair = enumerator.Current;
                     list.Add(pair.Value.GetLimit(), pair.Key);
-                } while (enumerator.MoveNext());
+                }
             }
             return list;
         }

@@ -19,13 +19,13 @@ namespace DiscordBot
         public ModuleManager()
         {
             modules = new List<string>();
-            modules.Add("math");
             modules.Add("admin");
+            modules.Add("api");
             modules.Add("chat");
             modules.Add("info");
-            modules.Add("api");
-            modules.Add("tools");
+            modules.Add("math");
             modules.Add("scheduler");
+            modules.Add("tools");
 
             try
             {
@@ -35,12 +35,12 @@ namespace DiscordBot
                 if(isLoaded.Count > 0 && modules.Count == isLoaded.Count)
                 {
                     var enumerator = isLoaded.GetEnumerator();
-                    do
+                    while(enumerator.MoveNext())
                     {
                         var pair = enumerator.Current;
-                            if (!modules.Contains(pair.Key))
-                                throw new Exception("Wrong module flags. Resetting.");
-                    } while (enumerator.MoveNext());
+                        if (!modules.Contains(pair.Key))
+                            throw new Exception("Wrong module flags. Resetting.");
+                    }
                 }
                 else //Not all flags loaded...
                 {
@@ -90,11 +90,11 @@ namespace DiscordBot
             if (isLoaded.Count > 0)
             {
                 var enumerator = isLoaded.GetEnumerator();
-                do
+                while (enumerator.MoveNext())
                 {
                     var pair = enumerator.Current;
                     result += "[" + (pair.Value ? "ON" : "OFF") + "]" + pair.Key + " | ";
-                } while (enumerator.MoveNext());
+                }
             }
             return result;
         }

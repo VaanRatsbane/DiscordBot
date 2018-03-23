@@ -157,35 +157,43 @@ namespace DiscordBot.Modules.Classes
 
         public async Task SolveReminders()
         {
-            var toSend = new List<List<Reminder>>();
-            var toRemove = new List<DateTimeOffset>();
-
             if (reminders.Count > 0)
             {
+                var toSend = new List<List<Reminder>>();
+                var toSendLate = new List<List<Reminder>>();
+                var toRemove = new List<DateTimeOffset>();
+
                 var enumerator = reminders.GetEnumerator();
                 do
                 {
                     var pair = enumerator.Current;
                     if (pair.Key <= DateTime.Now)
                     {
-                        toSend.Add(pair.Value);
+                        if (pair.Key + TimeSpan.FromMinutes(5) <= DateTime.Now)
+                            toSendLate.Add(pair.Value);
+                        else
+                            toSend.Add(pair.Value);
                         toRemove.Add(pair.Key);
                     }
                     else
                         break;
                 }
                 while (enumerator.MoveNext());
-            }
 
-            if (toSend.Count > 0)
-            {
-                var guild = await Program._discord.GetGuildAsync(ulong.Parse(Program.cfg.GetValue("guild")));
-                foreach(var list in toSend)
-                    await SendReminder(list, guild);
-            }
+                if (toSend.Count > 0)
+                {
+                    var guild = await Program._discord.GetGuildAsync(ulong.Parse(Program.cfg.GetValue("guild")));
+                    foreach (var list in toSend)
+                        if (list != null && list.Count > 0)
+                            await SendReminder(list, guild, false);
+                    foreach (var list in toSendLate)
+                        if (list != null && list.Count > 0)
+                            await SendReminder(list, guild, true);
+                }
 
-            foreach (var r in toRemove)
-                reminders.Remove(r);
+                foreach (var r in toRemove)
+                    reminders.Remove(r);
+            }
         }
 
         private async Task SendReminder(List<Reminder> reminders, DiscordGuild guild, bool isLate = false)
@@ -193,7 +201,7 @@ namespace DiscordBot.Modules.Classes
             var offset = DateTimeOffset.Now.Offset;
             DiscordEmbed embed = new DiscordEmbedBuilder()
                 .WithAuthor($"{Program._discord.CurrentUser.Username}#{Program._discord.CurrentUser.Discriminator}", icon_url: Program._discord.CurrentUser.AvatarUrl)
-                .WithTitle("Reminder")
+                .WithTitle($"[{reminders[0].scheduled.ToString("yyyy-MM-dd HH:mm:ss")}" + $" (UTC{(offset.Hours < 0 ? " - " : " + ")}{offset.TotalHours.ToString("0.00")})]")
                 .WithDescription(isLate ? "I apologize for not delivering the message on time, here you go:" : "As scheduled, here is your reminder:")
                 .WithFooter("As scheduled on " + reminders[0].created.ToString("yyyy-MM-dd HH:mm:ss") + $" (UTC{(offset.Hours < 0 ? " - " : " + ")}{offset.TotalHours.ToString("0.00")})");
 

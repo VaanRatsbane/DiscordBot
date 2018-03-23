@@ -98,12 +98,12 @@ namespace DiscordBot.Modules.Classes
             if (lastLogins.Count > 0)
             {
                 var enumerator = lastLogins.GetEnumerator();
-                do
+                while (enumerator.MoveNext())
                 {
                     var pair = enumerator.Current;
                     if ((DateTime.Now - pair.Value).TotalDays > dayLimit)
                         offenders.Add(pair.Key);
-                } while (enumerator.MoveNext());
+                }
             }
 
             if (offenders.Count > 0)

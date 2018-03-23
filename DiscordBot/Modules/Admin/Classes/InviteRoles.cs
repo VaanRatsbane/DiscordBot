@@ -92,12 +92,12 @@ namespace DiscordBot.Modules.Classes
             if (channelsToRoles.Count > 0)
             {
                 var enumerator = channelsToRoles.GetEnumerator();
-                do
+                while (enumerator.MoveNext())
                 {
                     var pair = enumerator.Current;
                     if (pair.Value == id)
                         temp.Add(pair.Key);
-                } while (enumerator.MoveNext());
+                }
             }
 
             foreach (var key in temp)
@@ -118,7 +118,7 @@ namespace DiscordBot.Modules.Classes
             if(channelsLinkUsages != null && channelsLinkUsages.Count > 0)
             {
                 var enumerator = channelsLinkUsages.GetEnumerator();
-                do
+                while (enumerator.MoveNext())
                 {
                     var pair = enumerator.Current;
                     if (temp.ContainsKey(pair.Key) && temp[pair.Key] > pair.Value)
@@ -128,7 +128,7 @@ namespace DiscordBot.Modules.Classes
                         else
                             return 0;
                     }
-                } while (enumerator.MoveNext());
+                }
             }
 
             channelsLinkUsages = temp;
