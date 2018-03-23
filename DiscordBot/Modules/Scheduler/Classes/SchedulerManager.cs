@@ -158,6 +158,7 @@ namespace DiscordBot.Modules.Classes
         public async Task SolveReminders()
         {
             var toSend = new List<List<Reminder>>();
+            var toRemove = new List<DateTimeOffset>();
 
             if (reminders.Count > 0)
             {
@@ -168,7 +169,7 @@ namespace DiscordBot.Modules.Classes
                     if (pair.Key <= DateTime.Now)
                     {
                         toSend.Add(pair.Value);
-                        reminders.Remove(pair.Key);
+                        toRemove.Add(pair.Key);
                     }
                     else
                         break;
@@ -182,6 +183,9 @@ namespace DiscordBot.Modules.Classes
                 foreach(var list in toSend)
                     await SendReminder(list, guild);
             }
+
+            foreach (var r in toRemove)
+                reminders.Remove(r);
         }
 
         private async Task SendReminder(List<Reminder> reminders, DiscordGuild guild, bool isLate = false)
