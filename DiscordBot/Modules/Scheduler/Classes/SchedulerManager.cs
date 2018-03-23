@@ -164,7 +164,7 @@ namespace DiscordBot.Modules.Classes
                 var toRemove = new List<DateTimeOffset>();
 
                 var enumerator = reminders.GetEnumerator();
-                do
+                while (enumerator.MoveNext())
                 {
                     var pair = enumerator.Current;
                     if (pair.Key <= DateTime.Now)
@@ -178,8 +178,7 @@ namespace DiscordBot.Modules.Classes
                     else
                         break;
                 }
-                while (enumerator.MoveNext());
-
+                
                 if (toSend.Count > 0)
                 {
                     var guild = await Program._discord.GetGuildAsync(ulong.Parse(Program.cfg.GetValue("guild")));
@@ -192,7 +191,8 @@ namespace DiscordBot.Modules.Classes
                 }
 
                 foreach (var r in toRemove)
-                    reminders.Remove(r);
+                    if(r != null)
+                        reminders.Remove(r);
             }
         }
 
