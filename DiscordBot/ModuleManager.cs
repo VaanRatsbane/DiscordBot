@@ -32,12 +32,15 @@ namespace DiscordBot
                 var json = File.ReadAllText(MODULES_FILE);
                 isLoaded = JsonConvert.DeserializeObject<ConcurrentDictionary<string, bool>>(json);
 
-                if(modules.Count == isLoaded.Count)
+                if(isLoaded.Count > 0 && modules.Count == isLoaded.Count)
                 {
-                    lock(isLoaded)
-                    foreach (var pair in isLoaded)
-                        if (!modules.Contains(pair.Key))
-                            throw new Exception("Wrong module flags. Resetting.");
+                    var enumerator = isLoaded.GetEnumerator();
+                    do
+                    {
+                        var pair = enumerator.Current;
+                            if (!modules.Contains(pair.Key))
+                                throw new Exception("Wrong module flags. Resetting.");
+                    } while (enumerator.MoveNext());
                 }
                 else //Not all flags loaded...
                 {
@@ -84,9 +87,15 @@ namespace DiscordBot
         public string Print()
         {
             string result = "";
-            lock(isLoaded)
-            foreach (var pair in isLoaded)
-                result += "[" + (pair.Value ? "ON" : "OFF") + "]" + pair.Key + " | ";
+            if (isLoaded.Count > 0)
+            {
+                var enumerator = isLoaded.GetEnumerator();
+                do
+                {
+                    var pair = enumerator.Current;
+                    result += "[" + (pair.Value ? "ON" : "OFF") + "]" + pair.Key + " | ";
+                } while (enumerator.MoveNext());
+            }
             return result;
         }
 

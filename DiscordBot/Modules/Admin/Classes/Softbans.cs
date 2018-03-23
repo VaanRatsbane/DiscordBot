@@ -85,10 +85,17 @@ namespace DiscordBot.Modules.Classes
             var guildObj = await Program._discord.GetGuildAsync(guild);
 
             var toRemove = new List<ulong>();
-            lock(softbans)
-            foreach(var pair in softbans)
-                if(pair.Value.HasExpired())
-                    toRemove.Add(pair.Key);
+
+            if (softbans.Count > 0)
+            {
+                var enumerator = softbans.GetEnumerator();
+                do
+                {
+                    var pair = enumerator.Current;
+                    if (pair.Value.HasExpired())
+                        toRemove.Add(pair.Key);
+                } while (enumerator.MoveNext());
+            }
 
             foreach (var id in toRemove)
             {
@@ -169,16 +176,21 @@ namespace DiscordBot.Modules.Classes
             ulong id = 0;
             TimeSpan? smallest = null;
 
-            lock(softbans)
-            foreach(var pair in softbans)
+            if (softbans.Count > 0)
             {
-                var ban = pair.Value;
-                var limit = ban.GetLimit();
-                if (smallest == null || (limit != default(DateTime) && limit - DateTime.Now < smallest))
+                var enumerator = softbans.GetEnumerator();
+
+                do
                 {
-                    smallest = limit - DateTime.Now;
-                    id = pair.Key;
-                }
+                    var pair = enumerator.Current;
+                    var ban = pair.Value;
+                    var limit = ban.GetLimit();
+                    if (smallest == null || (limit != default(DateTime) && limit - DateTime.Now < smallest))
+                    {
+                        smallest = limit - DateTime.Now;
+                        id = pair.Key;
+                    }
+                } while (enumerator.MoveNext());
             }
 
             nextUnbanID = id;
@@ -196,9 +208,15 @@ namespace DiscordBot.Modules.Classes
         public SortedList<DateTime, ulong> Listing()
         {
             var list = new SortedList<DateTime, ulong>();
-            lock(softbans)
-            foreach (var pair in softbans)
-                list.Add(pair.Value.GetLimit(), pair.Key);
+            if (softbans.Count > 0)
+            {
+                var enumerator = softbans.GetEnumerator();
+                do
+                {
+                    var pair = enumerator.Current;
+                    list.Add(pair.Value.GetLimit(), pair.Key);
+                } while (enumerator.MoveNext());
+            }
             return list;
         }
 

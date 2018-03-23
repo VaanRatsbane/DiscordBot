@@ -95,10 +95,16 @@ namespace DiscordBot.Modules.Classes
 
             List<ulong> offenders = new List<ulong>();
 
-            lock(lastLogins)
-            foreach (var pair in lastLogins)
-                if ((DateTime.Now - pair.Value).TotalDays > dayLimit)
-                    offenders.Add(pair.Key);
+            if (lastLogins.Count > 0)
+            {
+                var enumerator = lastLogins.GetEnumerator();
+                do
+                {
+                    var pair = enumerator.Current;
+                    if ((DateTime.Now - pair.Value).TotalDays > dayLimit)
+                        offenders.Add(pair.Key);
+                } while (enumerator.MoveNext());
+            }
 
             if (offenders.Count > 0)
             {
