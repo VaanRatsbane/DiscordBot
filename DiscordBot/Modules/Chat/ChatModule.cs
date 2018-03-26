@@ -6,6 +6,7 @@ using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace DiscordBot.Modules
@@ -233,5 +234,23 @@ namespace DiscordBot.Modules
             await ctx.RespondAsync(image.Animated ? image.Gifv : image.Link);
         }
 
+        [Command("trbmb"), Aliases("thatreally")]
+        public async Task TRBMB(CommandContext ctx)
+        {
+            WebClient client = null;
+            try
+            {
+                using (client = new WebClient())
+                {
+                    string msg = client.DownloadString("http://api.chew.pro/trbmb").Replace("[\"", "").Replace("\"]", "");
+                    await ctx.RespondAsync(msg);
+                }
+            }
+            catch
+            {
+                if (client != null)
+                    client.Dispose();
+            }
+        }
     }
 }
