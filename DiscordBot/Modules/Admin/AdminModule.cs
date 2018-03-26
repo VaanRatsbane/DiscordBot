@@ -83,6 +83,25 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("Kicked " + kicked + " member(s).");
         }
 
+        [Command("prunelist"), Description("Lists prunable people."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
+        public async Task ReportPrune(CommandContext ctx)
+        {
+            var list = await AutoPrune.Report();
+            string toSend = "";
+            var dmChannel = await ctx.Member.CreateDmChannelAsync();
+            foreach(var line in list)
+            {
+                if (toSend.Length + line.Length > 2000)
+                {
+                    await dmChannel.SendMessageAsync(toSend);
+                    toSend = "";
+                }
+                toSend += $"{line}\n";
+            }
+            if(!String.IsNullOrEmpty(toSend))
+                await dmChannel.SendMessageAsync(toSend);
+        }
+
         //Not happy with this if else party, should prob do a trycatch and throws
         [Command("softban"), Description("Softbans a member."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task Softban(CommandContext ctx, DiscordMember member,

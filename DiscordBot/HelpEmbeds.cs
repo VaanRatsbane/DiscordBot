@@ -45,7 +45,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.PhthaloBlue)
                 .WithTitle("Commands.")
                 .WithDescription("Use !help < command > to see the available commands.")
-                .AddField("Admin", "dumplog, inviterolelink, removerolelink, prune, " +
+                .AddField("Admin", "dumplog, inviterolelink, removerolelink, prune, prunelist" +
                 "softban, pardon, pardonroles, listsoftbans, wipe")
                 .AddField("Bot", "setnick, setstate, setgame, setavatar, getavatar, flag, toggleflag, createflag, deleteflag, " +
                 "listflags, setting, setsetting, createsetting, deletesetting, listsetting, " +
@@ -65,7 +65,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.IndianRed)
                 .WithTitle("Administrative commands.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "dumplog, inviterolelink, removerolelink, prune, " +
+                .AddField("Commands", "dumplog, inviterolelink, removerolelink, prune, prunelist" +
                 "softban, pardon, pardonroles, listsoftbans, wipe");
         }
 
