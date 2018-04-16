@@ -220,7 +220,7 @@ namespace DiscordBot.Modules.Classes
             return offenders;
         }
 
-        private static async void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        private static async Task<int> OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
             int kicked = await Prune();
 
