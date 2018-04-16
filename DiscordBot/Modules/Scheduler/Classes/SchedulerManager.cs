@@ -78,24 +78,34 @@ namespace DiscordBot.Modules.Classes
 
         public void CreateReminder(ulong memberId, string message, DateTimeOffset scheduled)
         {
-            if (!reminders.ContainsKey(scheduled.ToLocalTime().Date))
-            {
-                reminders.Add(scheduled, new List<Reminder>());
+            var localDate = scheduled.ToLocalTime().Date;
+            List<Reminder> rems, userRems;
+
+            if (reminders.TryGetValue(localDate, out rems)) {
                 SetReminderTimer();
             }
-            if (!remindersPerUser.ContainsKey(memberId))
-                remindersPerUser[memberId] = new List<Reminder>();
+            else
+            {
+                rems = new List<Reminder>();
+                reminders.TryAdd(localDate, rems);
+            }
+
+            if (!remindersPerUser.TryGetValue(memberId, out userRems))
+            {
+                userRems = new List<Reminder>();
+                remindersPerUser.TryAdd(memberId, userRems); //does nothing if it already exists
+            }
 
             var reminder = new Reminder()
             {
                 created = DateTime.Now,
-                scheduled = scheduled,
+                scheduled = localDate,
                 message = message,
                 userId = memberId
             };
 
-            reminders[scheduled].Add(reminder);
-            remindersPerUser[memberId].Add(reminder);
+            rems.Add(reminder);
+            userRems.Add(reminder);
         }
 
         public string[] ListReminders(ulong memberId)
@@ -105,30 +115,34 @@ namespace DiscordBot.Modules.Classes
                 return rems.ToArray();
 
             var offset = DateTimeOffset.Now;
-            rems.Add($"Dates are in UTC{(offset.Offset.Hours < 0 ? "-" : "+")}{offset.Offset.TotalHours.ToString("0.00")}");
-            for (int i = 0; i < remindersPerUser.Count; i++)
+            if (remindersPerUser.TryGetValue(memberId, out var userReminders))
             {
-                var reminder = remindersPerUser[memberId][i];
-                rems.Add($"({i+1}) [{reminder.scheduled.ToString()}] {reminder.message}");
+                rems.Add($"Dates are in UTC{(offset.Offset.Hours < 0 ? "-" : "+")}{offset.Offset.TotalHours.ToString("0.00")}");
+                for (int i = 0; i < userReminders.Count; i++)
+                {
+                    var reminder = userReminders[i];
+                    rems.Add($"({i + 1}) [{reminder.scheduled.ToString()}] {reminder.message}");
+                }
             }
             return rems.ToArray();
         }
 
         public bool CancelReminder(ulong memberId, int reminderPos)
         {
-            if (remindersPerUser.ContainsKey(memberId))
+            if (remindersPerUser.TryGetValue(memberId, out var userReminders))
             {
-                if (remindersPerUser[memberId].Count > reminderPos - 1)
+                if (userReminders.Count > reminderPos - 1)
                 {
-                    Reminder reminder = remindersPerUser[memberId][reminderPos - 1];
-                    if (remindersPerUser[memberId].Remove(reminder))
+                    Reminder reminder = userReminders[reminderPos - 1];
+                    if (userReminders.Remove(reminder))
                     {
-                        if (remindersPerUser[memberId].Count == 0)
+                        if (userReminders.Count == 0)
                             remindersPerUser.TryRemove(memberId, out var b);
 
-                        if (reminders[reminder.scheduled].Remove(reminder))
+                        if (reminders.TryGetValue(reminder.scheduled, out var value))
                         {
-                            if (reminders[reminder.scheduled].Count == 0)
+                            value.Remove(reminder);
+                            if (value.Count == 0)
                                 reminders.Remove(reminder.scheduled);
 
                             SetReminderTimer();
@@ -143,24 +157,42 @@ namespace DiscordBot.Modules.Classes
 
         public async Task SolveReminders()
         {
-            var toSend = new List<List<Reminder>>();
+            if (reminders.Count > 0)
+            {
+                var toSend = new List<List<Reminder>>();
+                var toSendLate = new List<List<Reminder>>();
+                var toRemove = new List<DateTimeOffset>();
 
-            lock (reminders)
-            foreach(var pair in reminders)
-            {
-                if (pair.Key <= DateTime.Now)
+                var enumerator = reminders.GetEnumerator();
+                while (enumerator.MoveNext())
                 {
-                    toSend.Add(pair.Value);
-                    reminders.Remove(pair.Key);
+                    var pair = enumerator.Current;
+                    if (pair.Key <= DateTime.Now)
+                    {
+                        if (pair.Key + TimeSpan.FromMinutes(5) <= DateTime.Now)
+                            toSendLate.Add(pair.Value);
+                        else
+                            toSend.Add(pair.Value);
+                        toRemove.Add(pair.Key);
+                    }
+                    else
+                        break;
                 }
-                else
-                    break;
-            }
-            if (toSend.Count > 0)
-            {
-                var guild = await Program._discord.GetGuildAsync(ulong.Parse(Program.cfg.GetValue("guild")));
-                foreach(var list in toSend)
-                    await SendReminder(list, guild);
+                
+                if (toSend.Count > 0)
+                {
+                    var guild = await Program._discord.GetGuildAsync(ulong.Parse(Program.cfg.GetValue("guild")));
+                    foreach (var list in toSend)
+                        if (list != null && list.Count > 0)
+                            await SendReminder(list, guild, false);
+                    foreach (var list in toSendLate)
+                        if (list != null && list.Count > 0)
+                            await SendReminder(list, guild, true);
+                }
+
+                foreach (var r in toRemove)
+                    if(r != null)
+                        reminders.Remove(r);
             }
         }
 
@@ -169,7 +201,7 @@ namespace DiscordBot.Modules.Classes
             var offset = DateTimeOffset.Now.Offset;
             DiscordEmbed embed = new DiscordEmbedBuilder()
                 .WithAuthor($"{Program._discord.CurrentUser.Username}#{Program._discord.CurrentUser.Discriminator}", icon_url: Program._discord.CurrentUser.AvatarUrl)
-                .WithTitle("Reminder")
+                .WithTitle($"[{reminders[0].scheduled.ToString("yyyy-MM-dd HH:mm:ss")}" + $" (UTC{(offset.Hours < 0 ? " - " : " + ")}{offset.TotalHours.ToString("0.00")})]")
                 .WithDescription(isLate ? "I apologize for not delivering the message on time, here you go:" : "As scheduled, here is your reminder:")
                 .WithFooter("As scheduled on " + reminders[0].created.ToString("yyyy-MM-dd HH:mm:ss") + $" (UTC{(offset.Hours < 0 ? " - " : " + ")}{offset.TotalHours.ToString("0.00")})");
 
@@ -182,9 +214,12 @@ namespace DiscordBot.Modules.Classes
                 var dm = await member.CreateDmChannelAsync();
                 await dm.SendMessageAsync(embed: remindEmbed);
 
-                remindersPerUser[reminder.userId].Remove(reminder);
-                if (remindersPerUser[reminder.userId].Count == 0)
-                    remindersPerUser.Remove(reminder.userId, out var b);
+                if (remindersPerUser.TryGetValue(reminder.userId, out var userReminders))
+                {
+                    userReminders.Remove(reminder);
+                    if (userReminders.Count == 0)
+                        remindersPerUser.Remove(reminder.userId, out var trash);
+                }
             }
 
         }

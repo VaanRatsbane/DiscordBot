@@ -50,7 +50,7 @@ namespace DiscordBot.Modules
         }
 
         [Command("setgame"), Description("Changes my current game."), RequirePermissions(DSharpPlus.Permissions.BanMembers)]
-        public async Task SetGame(CommandContext ctx, [Description("The game I will be playing.")]string game)
+        public async Task SetGame(CommandContext ctx, [Description("The game I will be playing."), RemainingText]string game)
         {
             await ctx.Client.UpdateStatusAsync(game : new DSharpPlus.Entities.DiscordGame(game));
         }

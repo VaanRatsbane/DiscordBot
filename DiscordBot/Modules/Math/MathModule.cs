@@ -5,29 +5,61 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using Hef.Math;
+using DiscordBot.Modules.Math.Classes;
+using System.IO;
 
 namespace DiscordBot.Modules
 {
-    [Group("math"), Description("Commands that calculate mathematical operations.")]
     class MathModule
     {
 
-        //[Command("calc"), Description("Calculates a formula. Rounded to 2 decimal places. Check https://archive.codeplex.com/?p=ncalc for documentation.")]
-        //public async Task Add(CommandContext ctx, [RemainingText]string formula)
-        //{
-        //    var expr = new Expression(formula);
-        //    string result = expr.Evaluate().ToString();
+        static Interpreter interpreter;
 
-        //    if(double.TryParse(result, out double number))
-        //    {
-        //        double rounded = Math.Round(number, 2);
-        //        if ((rounded > 0 && rounded < number) || (rounded < 0 && rounded > number))
-        //            rounded += rounded > 0 ? 0.01 : -0.01;
-        //        result = rounded.ToString();
-        //    }
-            
-        //    await ctx.RespondAsync(result);
-        //}
+        [Command("calc"), Description("Calculates a formula. Check https://github.com/fsegaud/Hef.Math.Interpreter#annex---handled-operations for syntax.")]
+        public async Task Add(CommandContext ctx, [RemainingText]string formula)
+        {
+            try
+            {
+                formula = formula.ToLower();
+
+                if (formula.StartsWith("setv"))
+                    return;
+
+                if (interpreter == null) interpreter = new Interpreter();
+                double result = interpreter.Calculate(formula);
+
+                await ctx.RespondAsync(result.ToString());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+
+        [Command("graph"), Aliases("plot"), Description("Draws a 2D graph based on a given formula. Use x as your variable. Check https://github.com/fsegaud/Hef.Math.Interpreter#annex---handled-operations for syntax.")]
+        public async Task Plot(CommandContext ctx, [Description("The function to render. Ex: x^2")]string formula,
+                                                   [Description("The low X viewport value.")] int viewXMin = -10,
+                                                   [Description("The high X viewport value.")] int viewXMax = 10,
+                                                   [Description("The low Y viewport value.")] int viewYMin = -10,
+                                                   [Description("The high Y viewport value.")] int viewYMax = 10)
+        {
+            try
+            {
+                if (interpreter == null) interpreter = new Interpreter();
+
+                Graphs.DrawGraph(interpreter, formula, viewXMin, viewXMax, viewYMin, viewYMax);
+                using (FileStream fs = new FileStream("_g.png", FileMode.Open))
+                {
+                    await ctx.RespondWithFileAsync(fs);
+                }
+                File.Delete("_g.png");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
 
         [Command("rolldice"), Description("Rolls a dice between two numbers. 6sided by default.")]
         public async Task RollDice(CommandContext ctx, int start = 1, int end = 6)
@@ -44,7 +76,7 @@ namespace DiscordBot.Modules
             string oct = Convert.ToString(dec, 8);
 
             var embed = new DiscordEmbedBuilder()
-                .WithAuthor($"{ctx.Client.CurrentUser.Username}#{ctx.Client.CurrentUser.Discriminator}")
+                .WithAuthor($"{ctx.Client.CurrentUser.GetFullIdentifier()}")
                 .AddField("Decimal", dec.ToString())
                 .AddField("Binary", bin)
                 .AddField("Hexadecimal", hex)
@@ -63,7 +95,7 @@ namespace DiscordBot.Modules
                 string oct = Convert.ToString(dec, 8);
 
                 var embed = new DiscordEmbedBuilder()
-                    .WithAuthor($"{ctx.Client.CurrentUser.Username}#{ctx.Client.CurrentUser.Discriminator}")
+                    .WithAuthor($"{ctx.Client.CurrentUser.GetFullIdentifier()}")
                     .AddField("Decimal", dec.ToString())
                     .AddField("Binary", bin)
                     .AddField("Hexadecimal", hex)
@@ -71,7 +103,7 @@ namespace DiscordBot.Modules
 
                 await ctx.RespondAsync(embed: embed);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 await ctx.RespondAsync("That is not a valid binary number.");
             }
@@ -88,7 +120,7 @@ namespace DiscordBot.Modules
                 string oct = Convert.ToString(dec, 8);
 
                 var embed = new DiscordEmbedBuilder()
-                    .WithAuthor($"{ctx.Client.CurrentUser.Username}#{ctx.Client.CurrentUser.Discriminator}")
+                    .WithAuthor($"{ctx.Client.CurrentUser.GetFullIdentifier()}")
                     .AddField("Decimal", dec.ToString())
                     .AddField("Binary", bin)
                     .AddField("Hexadecimal", hex)
@@ -101,7 +133,7 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("That is not a valid binary number.");
             }
         }
-                
+
         [Command("octvalues"), Description("Gets an octal number in other bases.")]
         public async Task OctalValues(CommandContext ctx, string oct)
         {
@@ -112,7 +144,7 @@ namespace DiscordBot.Modules
                 string hex = dec.ToString("X");
 
                 var embed = new DiscordEmbedBuilder()
-                    .WithAuthor($"{ctx.Client.CurrentUser.Username}#{ctx.Client.CurrentUser.Discriminator}")
+                    .WithAuthor($"{ctx.Client.CurrentUser.GetFullIdentifier()}")
                     .AddField("Decimal", dec.ToString())
                     .AddField("Binary", bin)
                     .AddField("Hexadecimal", hex)

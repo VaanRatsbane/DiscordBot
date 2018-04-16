@@ -1,13 +1,10 @@
-﻿using DiscordBot.Modules.Chat.Classes;
-using DiscordBot.Modules.Classes;
+﻿using DiscordBot.Modules.Classes;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -216,16 +213,6 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("trbmb"), Aliases("thatreally"), Description("That really blanks my blank.")]
-        public async Task ThatReally(CommandContext ctx)
-        {
-            using(WebClient client = new WebClient())
-            {
-                var result = client.DownloadString("http://api.chew.pro/trbmb");
-                await ctx.RespondAsync(result.Substring(2, result.Length - 4));
-            }
-        }
-
         [Command("dog"), Aliases(new string[] { "doge", "pupper", "doggo" }), Description("woof")]
         public async Task Dog(CommandContext ctx)
         {
@@ -275,5 +262,23 @@ namespace DiscordBot.Modules
             await ctx.RespondAsync(image.Animated ? image.Gifv : image.Link);
         }
 
+        [Command("trbmb"), Aliases("thatreally")]
+        public async Task TRBMB(CommandContext ctx)
+        {
+            WebClient client = null;
+            try
+            {
+                using (client = new WebClient())
+                {
+                    string msg = client.DownloadString("http://api.chew.pro/trbmb").Replace("[\"", "").Replace("\"]", "");
+                    await ctx.RespondAsync(msg);
+                }
+            }
+            catch
+            {
+                if (client != null)
+                    client.Dispose();
+            }
+        }
     }
 }

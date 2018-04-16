@@ -79,8 +79,6 @@ namespace DiscordBot.Modules.Classes
 
         public bool RemoveChannel(ulong id)
         {
-            var temp = new ConcurrentDictionary<ulong, ulong>();
-
             if (channelsToRoles.ContainsKey(id))
                 return channelsToRoles.TryRemove(id, out ulong value);
             else
@@ -91,10 +89,16 @@ namespace DiscordBot.Modules.Classes
         {
             var temp = new List<ulong>();
 
-            lock (channelsToRoles)
-            foreach (var pair in channelsToRoles)
-                if (pair.Value == id)
-                    temp.Add(pair.Key);
+            if (channelsToRoles.Count > 0)
+            {
+                var enumerator = channelsToRoles.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    var pair = enumerator.Current;
+                    if (pair.Value == id)
+                        temp.Add(pair.Key);
+                }
+            }
 
             foreach (var key in temp)
                 if (channelsToRoles.TryRemove(key, out ulong value))
@@ -110,24 +114,24 @@ namespace DiscordBot.Modules.Classes
                     var uses = temp.ContainsKey(i.Channel.Id) ? temp[i.Channel.Id] : 0;
                     temp[i.Channel.Id] = uses + i.Uses; //accumulating all invites of a channel
                 }
-
-            if(channelsLinkUsages != null)
+            ulong roleId = 0;
+            if(channelsLinkUsages != null && channelsLinkUsages.Count > 0)
             {
-                lock(channelsLinkUsages)
-                foreach(var pair in channelsLinkUsages)
+                var enumerator = channelsLinkUsages.GetEnumerator();
+                while (enumerator.MoveNext())
                 {
-                    if(temp.ContainsKey(pair.Key) && temp[pair.Key] > pair.Value)
+                    var pair = enumerator.Current;
+                    if (temp.ContainsKey(pair.Key) && temp[pair.Key] > pair.Value)
                     {
                         if (channelsToRoles.ContainsKey(pair.Key))
-                            return channelsToRoles[pair.Key];
-                        else
-                            return 0;
+                            roleId = channelsToRoles[pair.Key];
+                        break;
                     }
                 }
             }
 
             channelsLinkUsages = temp;
-            return 0;
+            return roleId;
         }
 
     }

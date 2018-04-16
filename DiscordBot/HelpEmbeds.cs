@@ -45,15 +45,15 @@ namespace DiscordBot
                 .WithColor(DiscordColor.PhthaloBlue)
                 .WithTitle("Commands.")
                 .WithDescription("Use !help < command > to see the available commands.")
-                .AddField("Admin", "dumplog, inviterolelink, removerolelink, prune, " +
+                .AddField("Admin", "dumplog, inviterolelink, removerolelink, prune, prunelist" +
                 "softban, pardon, pardonroles, listsoftbans, wipe")
                 .AddField("Bot", "setnick, setstate, setgame, setavatar, getavatar, flag, toggleflag, createflag, deleteflag, " +
                 "listflags, setting, setsetting, createsetting, deletesetting, listsetting, " +
                 "key, setkey, createkey, deletekey, listkeys, quit, enablemodule, disablemodule, listmodules")
-                .AddField("Chat", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab, cookie, cookies, dog, cat, trbmb")
+                .AddField("Chat", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab, cookie, cookies, dog, trbmb")
                 .AddField("Info", "about, status, server, uptime, time, currency, convertcurrency")
                 .AddField("API", "weather, ff, tf2, ow, mc, reddit, tf2server")
-                .AddField("Math", "calc, rolldice, decvalues, octvalues, binvalues, hexvalues")
+                .AddField("Math", "calc, graph, rolldice, decvalues, octvalues, binvalues, hexvalues")
                 .AddField("Tools", "color, uncolor, listcolors, tinyurl, lmgtfy, togethertube")
                 .AddField("Scheduler", "remindme, listreminders, cancelreminder");
         }
@@ -65,7 +65,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.IndianRed)
                 .WithTitle("Administrative commands.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "dumplog, inviterolelink, removerolelink, prune, " +
+                .AddField("Commands", "dumplog, inviterolelink, removerolelink, prune, prunelist" +
                 "softban, pardon, pardonroles, listsoftbans, wipe");
         }
 
@@ -88,7 +88,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Yellow)
                 .WithTitle("Fun chat shenanigans.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab, cookie, cookies, dog, cat, trbmb");
+                .AddField("Commands", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab, cookie, cookies, trbmb");
         }
 
         private static void BuildInfo(string authorName, string authorIcon)
@@ -118,7 +118,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Wheat)
                 .WithTitle("Do your homework.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "calc, rolldice, decvalues, octvalues, binvalues, hexvalues");
+                .AddField("Commands", "calc, graph, rolldice, decvalues, octvalues, binvalues, hexvalues");
         }
 
         private static void BuildTools(string authorName, string authorIcon)

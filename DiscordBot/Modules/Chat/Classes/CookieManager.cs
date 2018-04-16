@@ -53,23 +53,33 @@ namespace DiscordBot.Modules.Classes
 
         public void AddCookie(DiscordMember giver, DiscordMember receiver)
         {
+            CookieProfile giverProfile, receiverProfile, serverProfile;
+
             if (!cookieAlbum.ContainsKey(giver.Id))
-                cookieAlbum[giver.Id] = new CookieProfile();
+                giverProfile = new CookieProfile();
+            else if (!cookieAlbum.TryGetValue(giver.Id, out giverProfile))
+                return;
+
             if (!cookieAlbum.ContainsKey(receiver.Id))
-                cookieAlbum[receiver.Id] = new CookieProfile();
+                receiverProfile = new CookieProfile();
+            else if (!cookieAlbum.TryGetValue(receiver.Id, out receiverProfile))
+                return;
+
+            if (!cookieAlbum.TryGetValue(SERVER, out serverProfile))
+                return;
 
             cookieAlbum[giver.Id].Gave();
-            cookieAlbum[receiver.Id].Received();
-            cookieAlbum[SERVER].Gave();
-            cookieAlbum[SERVER].Received();
+            receiverProfile.Received();
+            serverProfile.Gave();
+            serverProfile.Received();
         }
 
         public void GetCookie(DiscordMember member, out int given, out int received)
         {
-            if (member == null)
-                cookieAlbum[SERVER].Data(out given, out received);
-            else if (cookieAlbum.ContainsKey(member.Id))
-                cookieAlbum[member.Id].Data(out given, out received);
+            CookieProfile profile;
+            if ((member == null && cookieAlbum.TryGetValue(SERVER, out profile))
+                || cookieAlbum.TryGetValue(member.Id, out profile))
+                profile.Data(out given, out received);
             else
             {
                 given = -1;
