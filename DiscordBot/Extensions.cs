@@ -45,6 +45,13 @@ namespace DiscordBot
             return $"{user.Username}#{user.Discriminator}";
         }
 
+        public static string Between(this string text, string before, string after)
+        {
+            int pFrom = text.IndexOf(before) + before.Length;
+            int pTo = text.LastIndexOf(after);
+            return text.Substring(pFrom, pTo - pFrom);
+        }
+
         public static object XmlDeserializeFromString(this string objectData, Type type)
         {
             var serializer = new XmlSerializer(type);

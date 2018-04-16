@@ -74,13 +74,43 @@ namespace DiscordBot.Modules
         [Command("prune"), Description("Prunes the server."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task Prune(CommandContext ctx)
         {
-            int kicked = await AutoPrune.Prune();
-            if (kicked < 0)
-                await ctx.RespondAsync("Error! Check bot log.");
-            else if (kicked == 0)
-                await ctx.RespondAsync("No one to kick.");
-            else
-                await ctx.RespondAsync("Kicked " + kicked + " member(s).");
+            try
+            {
+                int kicked = await AutoPrune.Prune();
+                if (kicked < 0)
+                    await ctx.RespondAsync("Error! Check bot log.");
+                else if (kicked == 0)
+                    await ctx.RespondAsync("No one to kick.");
+                else
+                    await ctx.RespondAsync("Kicked " + kicked + " member(s).");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+
+        [Command("prunelist"), Description("Returns people to be pruned."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
+        public async Task PruneList(CommandContext ctx)
+        {
+            var toPrune = AutoPrune.AvailableToPrune();
+            if (toPrune == null) return;
+            string result = $"You can prune {toPrune.Count} members.\n";
+            var dm = await ctx.Member.CreateDmChannelAsync();
+            foreach (var t in toPrune)
+            {
+                var newLine = $"{t}\n";
+                if ((result + newLine).Length > 2000)
+                {
+                    await dm.SendMessageAsync(result);
+                    result = "";
+                }
+
+                result += newLine;
+            }
+            if(result != "")
+                await dm.SendMessageAsync(result);
+            await ctx.RespondAsync("Sent by DM.");
         }
 
         //Not happy with this if else party, should prob do a trycatch and throws

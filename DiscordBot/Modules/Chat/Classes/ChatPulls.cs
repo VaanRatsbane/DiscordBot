@@ -4,22 +4,22 @@ using System.Text;
 
 namespace DiscordBot.Modules.Chat.Classes
 {
-    class ChatPulls
+    public class Dog
     {
         public string status { get; set; }
         public string message { get; set; }
     }
 
-    class Kitty
+    public class Kitty
     {
 
         // NOTE: Generated code may require at least .NET Framework 4.5 or .NET Core/Standard 2.0.
         /// <remarks/>
-        [System.Serializable]
+        [System.SerializableAttribute()]
         [System.ComponentModel.DesignerCategoryAttribute("code")]
         [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
-        public class response
+        public partial class response
         {
 
             private responseData dataField;
@@ -39,10 +39,10 @@ namespace DiscordBot.Modules.Chat.Classes
         }
 
         /// <remarks/>
-        [System.Serializable]
+        [System.SerializableAttribute()]
         [System.ComponentModel.DesignerCategoryAttribute("code")]
         [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-        public class responseData
+        public partial class responseData
         {
 
             private responseDataImages imagesField;
@@ -62,10 +62,10 @@ namespace DiscordBot.Modules.Chat.Classes
         }
 
         /// <remarks/>
-        [System.Serializable]
+        [System.SerializableAttribute()]
         [System.ComponentModel.DesignerCategoryAttribute("code")]
         [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-        public class responseDataImages
+        public partial class responseDataImages
         {
 
             private responseDataImagesImage imageField;
@@ -85,10 +85,10 @@ namespace DiscordBot.Modules.Chat.Classes
         }
 
         /// <remarks/>
-        [System.Serializable]
+        [System.SerializableAttribute()]
         [System.ComponentModel.DesignerCategoryAttribute("code")]
         [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-        public class responseDataImagesImage
+        public partial class responseDataImagesImage
         {
 
             private string urlField;

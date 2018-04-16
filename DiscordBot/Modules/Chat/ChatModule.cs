@@ -233,7 +233,7 @@ namespace DiscordBot.Modules
             using (WebClient client = new WebClient())
             {
                 var json = client.DownloadString(@"https://dog.ceo/api/breeds/image/random");
-                var doggo = JsonConvert.DeserializeObject<ChatPulls>(json);
+                var doggo = JsonConvert.DeserializeObject<Dog>(json);
                 if(doggo.status.ToLower().Equals("success"))
                     await ctx.RespondAsync(doggo.message);
             }
@@ -247,8 +247,7 @@ namespace DiscordBot.Modules
             {
                 client = new WebClient();
                 var xml = client.DownloadString(@"http://thecatapi.com/api/images/get?format=xml&results_per_page=1");
-                var result = xml.XmlDeserializeFromString(typeof(Kitty.response)) as Kitty.response;
-                await ctx.RespondAsync(result.data.images.image.url);
+                await ctx.RespondAsync(xml.Between("<url>", "</url>"));
             }
             catch (Exception ex)
             {

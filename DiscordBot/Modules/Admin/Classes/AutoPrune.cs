@@ -25,9 +25,9 @@ namespace DiscordBot.Modules.Classes
             }
 
             timer = new Timer();
-            timer.Interval = 1800000; //every 30 minutes, check
-            timer.Elapsed += OnTimedEvent;
-            timer.AutoReset = true;
+            //timer.Interval = 1800000; //every 30 minutes, check
+            //timer.Elapsed += OnTimedEvent;
+            //timer.AutoReset = true;
 
             try
             {
@@ -102,15 +102,37 @@ namespace DiscordBot.Modules.Classes
 
             if (offenders.Count > 0)
             {
-                var guild = await Program._discord.GetGuildAsync(ulong.Parse(Program.cfg.GetValue("discord")));
+                var guildText = Program.cfg.GetValue("guild");
+                if (!ulong.TryParse(guildText, out ulong guildId))
+                {
+                    Log.Error($"Couldn't get guildID at Prune. {guildText}");
+                    return -1;
+                }
+                var guild = await Program._discord.GetGuildAsync(guildId);
+                var regularsId = ulong.Parse(Program.cfg.GetValue("regulars"));
                 foreach (var offender in offenders)
                 {
-                    var member = await guild.GetMemberAsync(offender);
-                    if (member.Presence.Status != UserStatus.Offline)
+                    DiscordMember member;
+
+                    try
+                    {
+                        member = await guild.GetMemberAsync(offender);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+                    if (member == null)
+                    {
+                        lastLogins.Remove(member.Id, out var throwaway);
+                        continue;
+                    }
+
+                    if (member.Presence != null && member.Presence.Status != UserStatus.Offline)
                         lastLogins[offender] = DateTime.Now;
                     else
                     {
-                        var regularsId = ulong.Parse(Program.cfg.GetValue("regulars"));
                         bool isRegular = false;
                         foreach(var role in member.Roles)
                         {
@@ -134,6 +156,25 @@ namespace DiscordBot.Modules.Classes
 
             }
             return kicked;
+        }
+
+        public static List<ulong> AvailableToPrune()
+        {
+            double.TryParse(Program.cfg.GetValue("prunelimit"), out double dayLimit);
+
+            if (dayLimit < 15)
+            {
+                Log.Warning("Prune limit is less than 15 days! Notify bot owner.");
+                return null;
+            }
+
+            List<ulong> offenders = new List<ulong>();
+
+            lock (lastLogins)
+                foreach (var pair in lastLogins)
+                    if ((DateTime.Now - pair.Value).TotalDays > dayLimit)
+                        offenders.Add(pair.Key);
+            return offenders;
         }
 
         private static async void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
