@@ -230,7 +230,7 @@ namespace DiscordBot.Modules.Classes
             if (reminders.Count > 0)
             {
                 await SolveReminders();
-                reminderTimer.Interval = (reminders.Keys[0] - DateTime.Now).TotalMilliseconds;
+                reminderTimer.Interval = System.Math.Min((reminders.Keys[0] - DateTime.Now).TotalMilliseconds, Int32.MaxValue);
                 reminderTimer.Start();
             }
         }

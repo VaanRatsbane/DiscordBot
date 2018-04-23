@@ -76,6 +76,7 @@ namespace DiscordBot.Modules
         {
             try
             {
+
                 int kicked = await AutoPrune.Prune();
                 if (kicked < 0)
                     await ctx.RespondAsync("Error! Check bot log.");
@@ -118,7 +119,6 @@ namespace DiscordBot.Modules
         public async Task Softban(CommandContext ctx, DiscordMember member,
             [RemainingText, Description("The time limit for the ban. Use 'permanent' or a set of time denotations '#amount# {year/month/day/hour/minute/second}'")]string limit)
         {
-
             var pieces = limit.Split(' ');
             DateTime lift;
             TimeSpan span = new TimeSpan();
