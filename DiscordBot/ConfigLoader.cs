@@ -10,7 +10,7 @@ namespace DiscordBot
     /// <summary>
     /// Contains and manages configurations.
     /// </summary>
-    class ConfigLoader : Killable
+    class ConfigLoader : IKillable
     {
         
         const string FLAGS_FILE = "Files/Meta/flags.json";

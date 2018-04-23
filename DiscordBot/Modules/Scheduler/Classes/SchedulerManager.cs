@@ -10,7 +10,7 @@ using System.Timers;
 
 namespace DiscordBot.Modules.Classes
 {
-    class SchedulerManager : Killable
+    class SchedulerManager : IKillable
     {
 
         const string REMINDERS_PATH = "Files/Scheduler/reminders.json";

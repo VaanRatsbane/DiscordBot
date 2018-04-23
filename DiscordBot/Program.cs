@@ -17,7 +17,7 @@ namespace DiscordBot
     {
 
         //list of objects to safely kill at the end of execution (without relying on unreliable deconstructors)
-        static List<Killable> killables;
+        static List<IKillable> killables;
 
         public static DiscordClient _discord;
         public static CommandsNextModule _commands;
@@ -65,7 +65,7 @@ namespace DiscordBot
                     cfg.CreateValue("prefix", "!");
                 _commands = _discord.UseCommandsNext(new CommandsNextConfiguration
                 {
-                    StringPrefix = prefix != null ? prefix : "!",
+                    StringPrefix = prefix ?? "!",
                     EnableDefaultHelp = false
                 });
             }
@@ -109,9 +109,11 @@ namespace DiscordBot
 
             quitToken = new CancellationTokenSource();
 
-            saveTimer = new System.Timers.Timer();
-            saveTimer.Interval = 3600000; //save every hour
-            saveTimer.AutoReset = true;
+            saveTimer = new System.Timers.Timer
+            {
+                Interval = 3600000, //save every hour
+                AutoReset = true
+            };
             saveTimer.Elapsed += SaveTimer_Elapsed;
             saveTimer.Start();
 
@@ -230,7 +232,7 @@ namespace DiscordBot
 
         private static void Load()
         {
-            killables = new List<Killable>();
+            killables = new List<IKillable>();
 
             //Always load config first
             cfg = new ConfigLoader();

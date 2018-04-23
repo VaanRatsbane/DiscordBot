@@ -8,7 +8,7 @@ namespace DiscordBot
     /// <summary>
     /// Interface to mark objects as killables.
     /// </summary>
-    interface Killable
+    interface IKillable
     {
 
         /// <summary>

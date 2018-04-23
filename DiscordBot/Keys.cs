@@ -10,7 +10,7 @@ namespace DiscordBot
     /// <summary>
     /// Contains and manages API keys
     /// </summary>
-    class Keys : Killable
+    class Keys : IKillable
     {
 
         private const string KEYS_FILE = "Files/Meta/keys.json";

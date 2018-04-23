@@ -8,7 +8,7 @@ using System.Text;
 
 namespace DiscordBot.Modules.Classes
 {
-    class InviteRoles : Killable
+    class InviteRoles : IKillable
     {
 
         ConcurrentDictionary<ulong, ulong> channelsToRoles;

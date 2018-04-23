@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace DiscordBot.Modules.Classes
 {
-    class Softbans : Killable
+    class Softbans : IKillable
     {
 
         ConcurrentDictionary<ulong, Softban> softbans;

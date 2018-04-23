@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace DiscordBot
 {
-    class ModuleManager : Killable
+    class ModuleManager : IKillable
     {
 
         const string MODULES_FILE = "Files/Meta/loadedModules.json";

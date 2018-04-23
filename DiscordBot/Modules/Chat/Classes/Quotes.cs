@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace DiscordBot.Modules.Classes
 {
-    class Quotes : Killable
+    class Quotes : IKillable
     {
 
         const string QUOTE_FILE = "Files/Chat/quotes.json";

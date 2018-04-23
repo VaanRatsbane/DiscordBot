@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace DiscordBot.Modules.Classes
 {
-    public class CookieManager : Killable
+    public class CookieManager : IKillable
     {
 
         const string COOKIE_PATH = "Files/Chat/cookies.json";
