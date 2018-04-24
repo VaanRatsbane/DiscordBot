@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DiscordBot.Modules.Classes
 {
-    class AutoPrune : Killable
+    class AutoPrune : IKillable
     {
 
         static ConcurrentDictionary<ulong, DateTime> lastLogins;
@@ -93,9 +93,11 @@ namespace DiscordBot.Modules.Classes
             {
                 var guild = await Program._discord.GetGuildAsync(ulong.Parse(Program.cfg.GetValue("discord")));
                 var regularsId = ulong.Parse(Program.cfg.GetValue("regulars"));
-                var result = new List<string>();
-                result.Add($"People who haven't reported online activity in {dayLimit} days:\n");
-                foreach(var offender in offenders)
+                var result = new List<string>
+                {
+                    $"People who haven't reported online activity in {dayLimit} days:\n"
+                };
+                foreach (var offender in offenders)
                 {
                     var member = await guild.GetMemberAsync(offender);
                     bool isRegular = false;
@@ -163,12 +165,13 @@ namespace DiscordBot.Modules.Classes
                     }
                     catch
                     {
+                        lastLogins.Remove(offender, out var throwaway);
                         continue;
                     }
 
                     if (member == null)
                     {
-                        lastLogins.Remove(member.Id, out var throwaway);
+                        lastLogins.Remove(offender, out var throwaway);
                         continue;
                     }
 

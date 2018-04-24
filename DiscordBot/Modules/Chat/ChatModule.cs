@@ -60,9 +60,18 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("There are no saved quotes yet!");
             else
             {
-                var member = await ctx.Guild.GetMemberAsync(quote.memberId);
+                DiscordMember member;
+                try
+                {
+                    member = await ctx.Guild.GetMemberAsync(quote.memberId);
+                }
+                catch
+                {
+                    member = null;
+                }
+
                 var embed = new DiscordEmbedBuilder()
-                    .WithAuthor(member != null ? member.DisplayName : quote.username, icon_url: member != null ? member.AvatarUrl : null)
+                    .WithAuthor(member != null ? member.DisplayName : quote.username, icon_url: member?.AvatarUrl)
                     .WithFooter(quote.date + " | " + quote.messageId)
                     .WithDescription(quote.message);
 

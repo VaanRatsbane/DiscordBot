@@ -76,7 +76,6 @@ namespace DiscordBot.Modules
         {
             try
             {
-
                 int kicked = await AutoPrune.Prune();
                 if (kicked < 0)
                     await ctx.RespondAsync("Error! Check bot log.");
