@@ -118,7 +118,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Wheat)
                 .WithTitle("Do your homework.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "calc, graph, rolldice, decvalues, octvalues, binvalues, hexvalues");
+                .AddField("Commands", "calc, graph, latex, rolldice, decvalues, octvalues, binvalues, hexvalues");
         }
 
         private static void BuildTools(string authorName, string authorIcon)

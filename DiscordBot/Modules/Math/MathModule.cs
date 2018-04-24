@@ -8,6 +8,8 @@ using DSharpPlus.Entities;
 using Hef.Math;
 using DiscordBot.Modules.Math.Classes;
 using System.IO;
+using System.Net;
+using System.Drawing;
 
 namespace DiscordBot.Modules
 {
@@ -58,6 +60,32 @@ namespace DiscordBot.Modules
             catch(Exception e)
             {
                 Console.WriteLine(e.ToString());
+            }
+        }
+
+        [Command("latex"), Description("Uses latex notation to output formula images.")]
+        public async Task Latex(CommandContext ctx, [RemainingText]string formula)
+        {
+            try
+            {
+                var url = "http://latex.codecogs.com/gif.latex?" + formula;
+                using (WebClient client = new WebClient())
+                {
+                    var bytes = client.DownloadData(url);
+                    File.WriteAllBytes("image.gif", bytes);
+                }
+                LatexClass.ReplaceTransparency("image.gif", Color.White).Save("image2.gif");
+                using (FileStream fs = new FileStream("image2.gif", FileMode.Open))
+                    await ctx.RespondWithFileAsync(fs);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            finally
+            {
+                if (File.Exists("image.gif")) File.Delete("image.gif");
+                if (File.Exists("image2.gif")) File.Delete("image2.gif");
             }
         }
 
