@@ -63,12 +63,12 @@ namespace DiscordBot.Modules
             }
         }
 
-        [Command("latex"), Description("Uses latex notation to output formula images.")]
+        [Command("latex"), Description("Uses latex notation to output formula images. Powered by codecogs")]
         public async Task Latex(CommandContext ctx, [RemainingText]string formula)
         {
             try
             {
-                var url = "http://latex.codecogs.com/gif.latex?%5Cdpi%7B150%7D%20%5C" + formula;
+                var url = @"http://latex.codecogs.com/gif.latex?\dpi{150} " + formula;
                 using (WebClient client = new WebClient())
                 {
                     var bytes = client.DownloadData(url);
