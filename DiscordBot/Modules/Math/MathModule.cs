@@ -68,7 +68,7 @@ namespace DiscordBot.Modules
         {
             try
             {
-                var url = "http://latex.codecogs.com/gif.latex?" + formula;
+                var url = "http://latex.codecogs.com/gif.latex?%5Cdpi%7B150%7D%20%5C" + formula;
                 using (WebClient client = new WebClient())
                 {
                     var bytes = client.DownloadData(url);
