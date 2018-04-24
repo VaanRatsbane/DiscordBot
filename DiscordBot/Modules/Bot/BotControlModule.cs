@@ -3,6 +3,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -354,6 +355,23 @@ namespace DiscordBot.Modules
             await ctx.RespondAsync("Rebooting...");
             Program.reboot = true;
             Program.quitToken.Cancel();
+        }
+
+        [Command("update"), Description("Updates the bot."), RequireOwner]
+        public async Task Update(CommandContext ctx)
+        {
+            Process process = new Process();
+            process.StartInfo = new ProcessStartInfo
+            {
+                WorkingDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.ToString(),
+                FileName = "update.sh"
+            };
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.OutputDataReceived += (sender, args) => Log.Info(args.Data);
+            process.ErrorDataReceived += (sender, args) => Log.Error(args.Data);
+
+            process.Start();
         }
 
         [Command("enablemodule"), Description("Enable the commands of a module."), RequireOwner]

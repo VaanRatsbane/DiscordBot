@@ -185,6 +185,6 @@ namespace DiscordBot.Modules
                 await ctx.RespondAsync("That is not a valid binary number.");
             }
         }
-
     }
+
 }
