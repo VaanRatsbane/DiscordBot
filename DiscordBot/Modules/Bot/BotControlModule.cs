@@ -17,7 +17,8 @@ namespace DiscordBot.Modules
         [Command("setnick"), Description("Changes my nickname."), RequirePermissions(DSharpPlus.Permissions.BanMembers)]
         public async Task SetNick(CommandContext ctx, [Description("The new name I will display."), RemainingText]string nickname)
         {
-            foreach(var m in ctx.Guild.Members)
+            await ctx.TriggerTypingAsync();
+            foreach (var m in ctx.Guild.Members)
                 if(m.Id == ctx.Client.CurrentUser.Id)
                 {
                     await m.ModifyAsync(nickname: nickname);
@@ -28,6 +29,7 @@ namespace DiscordBot.Modules
         [Command("setstate"), Description("Changes my public state."), RequirePermissions(DSharpPlus.Permissions.BanMembers)]
         public async Task SetState(CommandContext ctx, [Description("The state. Use online, dnd, idle or offline.")]string state)
         {
+            await ctx.TriggerTypingAsync();
             switch (state.ToLowerInvariant())
             {
                 case "online":
@@ -53,12 +55,14 @@ namespace DiscordBot.Modules
         [Command("setgame"), Description("Changes my current game."), RequirePermissions(DSharpPlus.Permissions.BanMembers)]
         public async Task SetGame(CommandContext ctx, [Description("The game I will be playing."), RemainingText]string game)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Client.UpdateStatusAsync(game : new DSharpPlus.Entities.DiscordGame(game));
         }
 
         [Command("setavatar"), Description("Changes my avatar."), RequireOwner]
         public async Task SetAvatar(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             if (ctx.Message.Attachments != null && ctx.Message.Attachments.Count == 1 && ctx.Message.Attachments[0].Height > 0)
             {
                 try
@@ -84,6 +88,7 @@ namespace DiscordBot.Modules
         [Command("getavatar"), Description("Send you the url of my current avatar.")]
         public async Task GetAvatar(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.RespondAsync(ctx.Client.CurrentUser.AvatarUrl);
         }
 
@@ -360,10 +365,11 @@ namespace DiscordBot.Modules
         [Command("update"), Description("Updates the bot."), RequireOwner]
         public async Task Update(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             Process process = new Process();
             process.StartInfo = new ProcessStartInfo
             {
-                WorkingDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.ToString(),
+                WorkingDirectory = Environment.CurrentDirectory + "/../../",
                 FileName = "update.sh"
             };
             process.StartInfo.RedirectStandardOutput = true;
@@ -377,6 +383,7 @@ namespace DiscordBot.Modules
         [Command("enablemodule"), Description("Enable the commands of a module."), RequireOwner]
         public async Task RegisterModule(CommandContext ctx, string moduleName)
         {
+            await ctx.TriggerTypingAsync();
             if (moduleName == "botcontrol")
             {
                 await ctx.RespondAsync("The Bot Control module is always active.");
@@ -400,6 +407,7 @@ namespace DiscordBot.Modules
         [Command("disablemodule"), Description("Disable the commands of a module."), RequireOwner]
         public async Task UnregisterModule(CommandContext ctx, string moduleName)
         {
+            await ctx.TriggerTypingAsync();
             if (moduleName == "botcontrol")
             {
                 await ctx.RespondAsync("The Bot Control module cannot be deactivated.");
@@ -422,6 +430,7 @@ namespace DiscordBot.Modules
         [Command("listmodules"), Description("List modules and their states.")]
         public async Task ListModules(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.RespondAsync(Program.moduleManager.Print());
         }
 

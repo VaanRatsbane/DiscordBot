@@ -13,6 +13,7 @@ namespace DiscordBot.Modules
 
         public async Task ExecuteGroupAsync(CommandContext ctx, string command = null)
         {
+            await ctx.TriggerTypingAsync();
             if (command != null && command.Length > 0)
             {
                 var splices = command.Split(' ');
@@ -25,6 +26,7 @@ namespace DiscordBot.Modules
         [Command("commands")]
         public async Task PrintAll(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             if(ctx.Member.IsOwner)
                 await ctx.RespondAsync(embed: HelpEmbeds.commands);
@@ -39,6 +41,7 @@ namespace DiscordBot.Modules
         [Command("admin")]
         public async Task Admin(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.admin);
         }
@@ -46,6 +49,7 @@ namespace DiscordBot.Modules
         [Command("api")]
         public async Task API(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.api);
         }
@@ -53,6 +57,7 @@ namespace DiscordBot.Modules
         [Command("bot")]
         public async Task Bot(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.bot);
         }
@@ -60,6 +65,7 @@ namespace DiscordBot.Modules
         [Command("chat")]
         public async Task Chat(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.chat);
         }
@@ -67,6 +73,7 @@ namespace DiscordBot.Modules
         [Command("info")]
         public async Task Info(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.info);
         }
@@ -74,6 +81,7 @@ namespace DiscordBot.Modules
         [Command("math")]
         public async Task Math(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(embed: HelpEmbeds.math);
         }
@@ -81,6 +89,7 @@ namespace DiscordBot.Modules
         [Command("tools")]
         public async Task Tools(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             var msg = await ctx.RespondAsync(embed: HelpEmbeds.tools);
         }
@@ -88,6 +97,7 @@ namespace DiscordBot.Modules
         [Command("scheduler")]
         public async Task Scheduler(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             var msg = await ctx.RespondAsync(embed: HelpEmbeds.scheduler);
         }

@@ -51,9 +51,9 @@ namespace DiscordBot
                 "listflags, setting, setsetting, createsetting, deletesetting, listsetting, " +
                 "key, setkey, createkey, deletekey, listkeys, quit, enablemodule, disablemodule, listmodules")
                 .AddField("Chat", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab, cookie, cookies, dog, trbmb")
-                .AddField("Info", "about, status, server, uptime, time, currency, convertcurrency")
-                .AddField("API", "weather, ff, tf2, ow, mc, reddit, tf2server")
-                .AddField("Math", "calc, graph, rolldice, decvalues, octvalues, binvalues, hexvalues")
+                .AddField("Info", "about, status, server, uptime, time, currencies, convertcurrency, whois")
+                .AddField("API", "weather, ff, tf2, ow, mc, reddit")
+                .AddField("Math", "calc, graph, latex, rolldice, decvalues, octvalues, binvalues, hexvalues")
                 .AddField("Tools", "color, uncolor, listcolors, tinyurl, lmgtfy, togethertube")
                 .AddField("Scheduler", "remindme, listreminders, cancelreminder");
         }
@@ -98,7 +98,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Teal)
                 .WithTitle("Get information on various subjects.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "about, status, server, uptime, time, currency, convertcurrency");
+                .AddField("Commands", "about, status, server, uptime, time, currencies, convertcurrency, whois");
         }
 
         private static void BuildAPI(string authorName, string authorIcon)
@@ -108,7 +108,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Cyan)
                 .WithTitle("Commands to poll information from the internet.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "weather, ff, tf2, ow, mc, reddit, tf2server");
+                .AddField("Commands", "weather, ff, tf2, ow, mc, reddit");
         }
 
         private static void BuildMath(string authorName, string authorIcon)

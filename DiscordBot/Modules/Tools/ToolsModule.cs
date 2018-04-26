@@ -19,6 +19,7 @@ namespace DiscordBot.Modules
         [Command("color"), Aliases("colour"), Description("Assign yourself a color. Use listcolors to see the available ones.")]
         public async Task Color(CommandContext ctx, string color)
         {
+            await ctx.TriggerTypingAsync();
             color = color.ToUpperInvariant();
             if (colors.Contains(color))
             {
@@ -37,6 +38,7 @@ namespace DiscordBot.Modules
         [Command("uncolor"), Aliases("uncolour"), Description("Unassign yourself a color.")]
         public async Task Uncolor(CommandContext ctx, string color)
         {
+            await ctx.TriggerTypingAsync();
             color = color.ToUpperInvariant();
             if (colors.Contains(color))
             {
@@ -55,6 +57,7 @@ namespace DiscordBot.Modules
         [Command("listcolors"), Aliases("listcolours"), Description("List the available colours.")]
         public async Task ListColors(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.RespondAsync("Available colors:");
             await ctx.RespondAsync(String.Join(' ', colors));
         }
@@ -62,6 +65,7 @@ namespace DiscordBot.Modules
         [Command("tinyurl"), Description("Shorten a link.")]
         public async Task TinyUrl(CommandContext ctx, [RemainingText]string url)
         {
+            await ctx.TriggerTypingAsync();
             try
             {
                 using(WebClient client = new WebClient())
@@ -79,6 +83,7 @@ namespace DiscordBot.Modules
         [Command("lmgtfy"), Aliases("helpjas"), Description("I'll do the hard work for you.")]
         public async Task LMGTFY(CommandContext ctx, [RemainingText]string url)
         {
+            await ctx.TriggerTypingAsync();
             await TinyUrl(ctx, "http://letmegooglethatforyou.com/?q="+url);
         }
 
@@ -86,6 +91,7 @@ namespace DiscordBot.Modules
         [Command("togethertube"), Aliases("totube"), Description("Watch videos with your friends!")]
         public async Task ToTube(CommandContext ctx, [RemainingText]string url)
         {
+            await ctx.TriggerTypingAsync();
             Uri uri;
             using (var client = new HttpClient())
             {

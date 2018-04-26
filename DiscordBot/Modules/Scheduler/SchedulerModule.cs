@@ -16,6 +16,7 @@ namespace DiscordBot.Modules
         public async Task RemindeMe(CommandContext ctx, [Description("When to remind you. Remember to add a timezone if you don't share the bot's.")]string date,
             [RemainingText, Description("The message you want to be reminded with.")] string message)
         {
+            await ctx.TriggerTypingAsync();
             try
             {
                 DateTimeOffset scheduled = DateTimeOffset.Parse(date);
@@ -69,6 +70,7 @@ namespace DiscordBot.Modules
         [Command("cancelreminder"), Description("Cancel one of your reminders.")]
         public async Task CancelReminder(CommandContext ctx, int reminderToRemove)
         {
+            await ctx.TriggerTypingAsync();
             if (reminderToRemove <= 0 || !Program.scheduler.CancelReminder(ctx.Member.Id, reminderToRemove))
                 await ctx.RespondAsync("Use listreminders to get a correct Reminder ID to remove.");
             else

@@ -23,6 +23,7 @@ namespace DiscordBot.Modules
         [Command("weather"), Description("Gets weather info on a given location.")]
         public async Task Weather(CommandContext ctx, [RemainingText]string location)
         {
+            await ctx.TriggerTypingAsync();
             IGeocoder geocoder = new GoogleGeocoder() { ApiKey = Program.keys.GetKey("googlemaps") };
             IEnumerable<Address> addresses = await geocoder.GeocodeAsync(location.ToLowerInvariant());
 
@@ -84,24 +85,28 @@ namespace DiscordBot.Modules
         [Command("ff"), Aliases("finalfantasy"), Description("Search the Final Fantasy wikia.")]
         public async Task FFWiki(CommandContext ctx, [RemainingText]string query)
         {
+            await ctx.TriggerTypingAsync();
             await GetWikiaEmbed(ctx, DiscordColor.Cyan, "finalfantasy", "Final Fantasy", "https://vignette.wikia.nocookie.net/finalfantasy/images/b/bc/Wiki.png", query);
         }
 
         [Command("tf2"), Aliases("teamfortress2"), Description("Search the Team Fortress 2 wikia.")]
         public async Task TF2Wiki(CommandContext ctx, [RemainingText]string query)
         {
+            await ctx.TriggerTypingAsync();
             await GetWikiaEmbed(ctx, DiscordColor.Orange, "teamfortress", "Team Fortress 2", "https://steamuserimages-a.akamaihd.net/ugc/594789945355042791/A016D9748918786B9933858543B27EEAFFB056D2/", query);
         }
 
         [Command("ow"), Aliases("overwatch"), Description("Search the Overwatch wikia.")]
         public async Task OWWiki(CommandContext ctx, [RemainingText]string query)
         {
+            await ctx.TriggerTypingAsync();
             await GetWikiaEmbed(ctx, DiscordColor.Gold, "overwatch", "Overwatch", "https://blitzesports.com/assets/img/icons/ow_light.png", query);
         }
 
         [Command("mc"), Aliases("minecraft"), Description("Search the Minecraft wikia.")]
         public async Task MCWiki(CommandContext ctx, [RemainingText]string query)
         {
+            await ctx.TriggerTypingAsync();
             await GetWikiaEmbed(ctx, DiscordColor.Gold, "minecraft", "Minecraft", "", query);
         }
 
@@ -160,6 +165,7 @@ namespace DiscordBot.Modules
         [Command("reddit"), Description("Top 3 posts of the day on any given subreddit.")]
         public async Task Leddit(CommandContext ctx, string subreddit)
         {
+            await ctx.TriggerTypingAsync();
             WebClient client = new WebClient();
             try
             {

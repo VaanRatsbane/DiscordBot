@@ -22,6 +22,7 @@ namespace DiscordBot.Modules
         [Command("savequote"), Description("Saves a message for posterity.")]
         public async Task SaveQuote(CommandContext ctx, ulong messageId = 0, ulong channelId = 0)
         {
+            await ctx.TriggerTypingAsync();
             DiscordChannel channel;
             DiscordMessage message;
             if (channelId == 0)
@@ -55,6 +56,7 @@ namespace DiscordBot.Modules
         [Command("randomquote"), Description("Gets a random quote.")]
         public async Task RandomQuote(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             Quote quote = Program.quotes.RandomQuote();
             if (quote == null)
                 await ctx.RespondAsync("There are no saved quotes yet!");
@@ -82,6 +84,7 @@ namespace DiscordBot.Modules
         [Command("removequote"), Description("Remove a quote."), RequireOwner]
         public async Task RemoveQuote(CommandContext ctx, ulong messageId)
         {
+            await ctx.TriggerTypingAsync();
             if (Program.quotes.RemoveQuote(messageId))
                 await ctx.RespondAsync("👌");
             else
@@ -91,12 +94,14 @@ namespace DiscordBot.Modules
         [Command("choose"), Description("Choose from a list of things.")]
         public async Task Choose(CommandContext ctx, [Description("The list of choices, seperated by spaces. Multi worded choices delimited by quotes.")]params string[] choices)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.RespondAsync(choices[Program.rng.Next(choices.Length)]);
         }
 
         [Command("8ball"), Description("Ask me a question with a yes or no answer, and I shall tell you the secrets of the universe...")]
         public async Task EightBall(CommandContext ctx, [RemainingText]string query)
         {
+            await ctx.TriggerTypingAsync();
             query = query.ToLowerInvariant(); //standardize answer
             int value = 0;
             foreach (var c in query)
@@ -185,6 +190,7 @@ namespace DiscordBot.Modules
         [Command("echo"), Description("I'll repeat what you say... to the best of my capabilities.")]
         public async Task Echo(CommandContext ctx, [RemainingText]string message)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             await ctx.RespondAsync(message);
         }
@@ -192,6 +198,7 @@ namespace DiscordBot.Modules
         [Command("dab"), Description("Feels dab man.")]
         public async Task Dab(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             await ctx.RespondAsync((await ctx.Guild.GetEmojiAsync(410860287852412928)).GetDiscordName());
         }
@@ -199,6 +206,7 @@ namespace DiscordBot.Modules
         [Command("cookie"), Description("Gives a cookie 🍪yum🍪")]
         public async Task Cookie(CommandContext ctx, DiscordMember member)
         {
+            await ctx.TriggerTypingAsync();
             if (ctx.Member.Id == member.Id)
             {
                 await ctx.RespondAsync("You cannot send cookies to yourself, fatty!");
@@ -212,6 +220,7 @@ namespace DiscordBot.Modules
         [Command("cookies"), Description("How many cookies have been going around.")]
         public async Task Cookies(CommandContext ctx, DiscordMember member = null)
         {
+            await ctx.TriggerTypingAsync();
             int given, received;
             Program.cookies.GetCookie(member, out given, out received);
             if (given == -1 && received == -1)
@@ -228,6 +237,7 @@ namespace DiscordBot.Modules
         [Command("dog"), Aliases(new string[] { "doge", "pupper", "doggo" }), Description("woof")]
         public async Task Dog(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             //await SendImgurItem(ctx, Program.cfg.GetValue("dogimgur"));
             using (WebClient client = new WebClient())
             {
@@ -241,6 +251,7 @@ namespace DiscordBot.Modules
         [Command("cat"), Aliases(new string[] { "kitty" }), Description("meow")]
         public async Task Cat(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             WebClient client = null;
             try
             {

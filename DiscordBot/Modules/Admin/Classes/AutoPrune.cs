@@ -193,7 +193,7 @@ namespace DiscordBot.Modules.Classes
 
                         if (!isRegular)
                         {
-                            await guild.RemoveMemberAsync(member, "Automatically pruned for being offline for " + dayLimit + " days.");
+                            await guild.RemoveMemberAsync(member, "Pruned for being offline for " + dayLimit + " days.");
                             lastLogins.TryRemove(offender, out var disposable);
                             kicked++;
                         }

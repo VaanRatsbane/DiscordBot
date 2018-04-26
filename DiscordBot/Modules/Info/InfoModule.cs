@@ -21,6 +21,7 @@ namespace DiscordBot.Modules
         public async Task About(CommandContext ctx)
         {
 
+            await ctx.TriggerTypingAsync();
             var author = $"{ctx.Guild.Owner.Username}#{ctx.Guild.Owner.Discriminator}";
 
             var embed = new DiscordEmbedBuilder()
@@ -38,6 +39,7 @@ namespace DiscordBot.Modules
         [Command("status"), Description("Bot status information.")]
         public async Task Status(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             var p = Process.GetCurrentProcess();
             var memoryUsed = p.WorkingSet64 / 1024 / 1024;
             var os = RuntimeInformation.OSDescription;
@@ -67,6 +69,7 @@ namespace DiscordBot.Modules
         [Command("server"), Aliases("guild"), Description("Information about this server.")]
         public async Task Server(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             var embed = new DiscordEmbedBuilder()
                 .WithTitle(ctx.Guild.Name)
                 .WithDescription("Information about this server.")
@@ -83,6 +86,7 @@ namespace DiscordBot.Modules
         {
             try
             {
+                await ctx.TriggerTypingAsync();
                 var now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);
                 var embed = new DiscordEmbedBuilder()
                     .WithAuthor(ctx.Client.CurrentUser.GetFullIdentifier(), null, ctx.Client.CurrentUser.AvatarUrl)
@@ -99,7 +103,8 @@ namespace DiscordBot.Modules
         [Command("currencies"), Description("Shows current currency exchange rates. Updates daily.")]
         public async Task GetCurrencies(CommandContext ctx)
         {
-            if(Currencies.lastUpdated == null || Currencies.lastUpdated < DateTime.UtcNow)
+            await ctx.TriggerTypingAsync();
+            if (Currencies.lastUpdated == null || Currencies.lastUpdated < DateTime.UtcNow)
                 Currencies.Update(ctx);
 
             if (Currencies.embed != null)
@@ -112,6 +117,7 @@ namespace DiscordBot.Modules
         {
             try
             {
+                await ctx.TriggerTypingAsync();
                 if (Currencies.currencies == null)
                     Currencies.Update(ctx);
 
@@ -140,6 +146,15 @@ namespace DiscordBot.Modules
                     await ctx.RespondAsync("Use one of the following currencies:\n" + Currencies.ListCurrencies());
             }
             catch (Exception e) { Console.WriteLine(e.ToString()); }
+        }
+
+        [Command("whois"), Description("Provides information on a user.")]
+        public async Task WhoIs(CommandContext ctx, ulong id)
+        {
+            await ctx.TriggerTypingAsync();
+            var member = await ctx.Guild.GetMemberAsync(id);
+            await ctx.RespondAsync(member == null ? "The guild has no member with that id." :
+                $"{member.DisplayName}#{member.Discriminator}, joined at {member.JoinedAt.ToString()}.");
         }
 
     }

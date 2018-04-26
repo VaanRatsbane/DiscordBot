@@ -21,6 +21,7 @@ namespace DiscordBot.Modules
         [Command("calc"), Description("Calculates a formula. Check https://github.com/fsegaud/Hef.Math.Interpreter#annex---handled-operations for syntax.")]
         public async Task Add(CommandContext ctx, [RemainingText]string formula)
         {
+            await ctx.TriggerTypingAsync();
             try
             {
                 formula = formula.ToLower();
@@ -46,6 +47,7 @@ namespace DiscordBot.Modules
                                                    [Description("The low Y viewport value.")] int viewYMin = -10,
                                                    [Description("The high Y viewport value.")] int viewYMax = 10)
         {
+            await ctx.TriggerTypingAsync();
             try
             {
                 if (interpreter == null) interpreter = new Interpreter();
@@ -66,6 +68,7 @@ namespace DiscordBot.Modules
         [Command("latex"), Description("Uses latex notation to output formula images. Powered by codecogs")]
         public async Task Latex(CommandContext ctx, [RemainingText]string formula)
         {
+            await ctx.TriggerTypingAsync();
             try
             {
                 var url = @"http://latex.codecogs.com/gif.latex?\dpi{150} " + formula;
@@ -92,6 +95,7 @@ namespace DiscordBot.Modules
         [Command("rolldice"), Description("Rolls a dice between two numbers. 6sided by default.")]
         public async Task RollDice(CommandContext ctx, int start = 1, int end = 6)
         {
+            await ctx.TriggerTypingAsync();
             int rnd = Program.rng.Next(start, end + start);
             await ctx.RespondAsync($"🎲{rnd}🎲");
         }
@@ -99,6 +103,7 @@ namespace DiscordBot.Modules
         [Command("decvalues"), Description("Gets a decimal number in other bases.")]
         public async Task DecValues(CommandContext ctx, int dec)
         {
+            await ctx.TriggerTypingAsync();
             string bin = Convert.ToString(dec, 2);
             string hex = dec.ToString("X");
             string oct = Convert.ToString(dec, 8);
@@ -116,6 +121,7 @@ namespace DiscordBot.Modules
         [Command("binvalues"), Description("Gets a binary number in other bases.")]
         public async Task DecValues(CommandContext ctx, string bin)
         {
+            await ctx.TriggerTypingAsync();
             try
             {
                 int dec = Convert.ToInt32(bin, 2);
@@ -140,6 +146,7 @@ namespace DiscordBot.Modules
         [Command("hexvalues"), Description("Gets an hexadecimal number in other bases.")]
         public async Task HexValues(CommandContext ctx, string hex)
         {
+            await ctx.TriggerTypingAsync();
             try
             {
                 hex = hex.ToUpperInvariant();
@@ -165,6 +172,7 @@ namespace DiscordBot.Modules
         [Command("octvalues"), Description("Gets an octal number in other bases.")]
         public async Task OctalValues(CommandContext ctx, string oct)
         {
+            await ctx.TriggerTypingAsync();
             try
             {
                 int dec = Convert.ToInt32(oct, 8);

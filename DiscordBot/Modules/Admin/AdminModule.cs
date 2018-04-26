@@ -19,6 +19,7 @@ namespace DiscordBot.Modules
         [Command("dumplog"), Description("Dumps a specific log file. Leave value at -1 for current."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task DumpLog(CommandContext ctx, int year = -1, int month = -1, int day = -1)
         {
+            await ctx.TriggerTypingAsync();
             var now = DateTime.Now;
             FileStream fs = null;
 
@@ -51,7 +52,8 @@ namespace DiscordBot.Modules
         [Command("inviterolelink"), Description("Associates a channel invite to an automatic role attribution. Run in the channel that generated such invite."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task InviteToRoleLink(CommandContext ctx, DiscordRole role)
         {
-            if(Program.inviteRoles.HasChannel(ctx.Channel.Id))
+            await ctx.TriggerTypingAsync();
+            if (Program.inviteRoles.HasChannel(ctx.Channel.Id))
             {
                 await ctx.RespondAsync("This channel already has automatic role attribution.");
             }
@@ -65,6 +67,7 @@ namespace DiscordBot.Modules
         [Command("removerolelink"), Description("Removes a channel invite role association. Run in the channel that generated such invite."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task RemoveRoleLink(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             if (Program.inviteRoles.RemoveChannel(ctx.Channel.Id))
                 await ctx.RespondAsync("Link erased.");
             else
@@ -74,6 +77,7 @@ namespace DiscordBot.Modules
         [Command("prune"), Description("Prunes the server."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task Prune(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             try
             {
                 int kicked = await AutoPrune.Prune();
@@ -93,6 +97,7 @@ namespace DiscordBot.Modules
         [Command("prunelist"), Description("Returns people to be pruned."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task PruneList(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             var toPrune = AutoPrune.AvailableToPrune();
             if (toPrune == null) return;
             string result = $"You can prune {toPrune.Count} members.\n";
@@ -118,6 +123,7 @@ namespace DiscordBot.Modules
         public async Task Softban(CommandContext ctx, DiscordMember member,
             [RemainingText, Description("The time limit for the ban. Use 'permanent' or a set of time denotations '#amount# {year/month/day/hour/minute/second}'")]string limit)
         {
+            await ctx.TriggerTypingAsync();
             var pieces = limit.Split(' ');
             DateTime lift;
             TimeSpan span = new TimeSpan();
@@ -220,6 +226,7 @@ namespace DiscordBot.Modules
         [Command("pardon"), Description("Pardons a member."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task PardonBan(CommandContext ctx, DiscordMember member)
         {
+            await ctx.TriggerTypingAsync();
             if (Program.softbans.Pardon(member))
                 await ctx.RespondAsync("Pardoned.");
             else
@@ -229,6 +236,7 @@ namespace DiscordBot.Modules
         [Command("pardonnoroles"), Description("Pardons a member without restoring their roles."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task PardonBanNoRoles(CommandContext ctx, DiscordMember member)
         {
+            await ctx.TriggerTypingAsync();
             if (Program.softbans.PardonWithNoRoles(member))
                 await ctx.RespondAsync("Pardoned.");
             else
@@ -238,6 +246,7 @@ namespace DiscordBot.Modules
         [Command("listsoftbans"), Description("Prints softbans and their time limits."), RequirePermissions(DSharpPlus.Permissions.KickMembers)]
         public async Task ListBans(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             var list = Program.softbans.Listing();
             if (list.Count == 0)
                 await ctx.RespondAsync("There are no softbans to show.");
@@ -265,6 +274,7 @@ namespace DiscordBot.Modules
         [Command("wipe"), Description("Wipes a number of messages from the channel."), RequirePermissions(DSharpPlus.Permissions.ManageMessages)]
         public async Task Wipe(CommandContext ctx, int quantity = 100)
         {
+            await ctx.TriggerTypingAsync();
             await ctx.Message.DeleteAsync();
             var msgs = await ctx.Channel.GetMessagesAsync(quantity);
             if (msgs.Count > 0)
@@ -272,7 +282,6 @@ namespace DiscordBot.Modules
                 await ctx.Channel.DeleteMessagesAsync(msgs);
                 await ctx.RespondAsync("Wiped " + msgs.Count + " messages.");
             }
-
         }
 
     }
