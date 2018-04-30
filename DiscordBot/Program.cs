@@ -34,9 +34,9 @@ namespace DiscordBot
         public static CookieManager cookies;
         public static SchedulerManager scheduler;
         public static YoutubeFeed youtubeFeed;
+        public static TwitterFeed twitterFeed;
 
         public static Random rng;
-
         public static CancellationTokenSource quitToken;
         public static bool reboot = false;
 
@@ -275,6 +275,10 @@ namespace DiscordBot
             //Youtube
             youtubeFeed = new YoutubeFeed();
             killables.Add(youtubeFeed);
+
+            //Twitter
+            twitterFeed = new TwitterFeed();
+            killables.Add(twitterFeed);
 
         }
 

@@ -56,7 +56,7 @@ namespace DiscordBot.Modules
                     colorCode = "7fff00";
                 else if (temp > 0)
                     colorCode = "00ff7f";
-                else if (temp > 10)
+                else if (temp > -10)
                     colorCode = "007fff";
                 else
                     colorCode = "0000ff";
@@ -240,6 +240,48 @@ namespace DiscordBot.Modules
             else
             {
                 await ctx.RespondAsync("Use a url with the standard format.");
+            }
+        }
+
+        [Command("addtwitterfeed"), Description("Adds a twitter user to look out for."), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
+        public async Task AddTwitter(CommandContext ctx, string user)
+        {
+            await ctx.TriggerTypingAsync();
+            if (Program.twitterFeed.Validate(user))
+            {
+                if (Program.twitterFeed.Add(user))
+                {
+                    await ctx.RespondAsync("Added.");
+                }
+                else
+                {
+                    await ctx.RespondAsync("That feed has already been added.");
+                }
+            }
+            else
+            {
+                await ctx.RespondAsync("That twitter user does not exist.");
+            }
+        }
+
+        [Command("removetwitterfeed"), Description("Removes a twitter user from the list to look out for."), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
+        public async Task RemoveTwitter(CommandContext ctx, string user)
+        {
+            await ctx.TriggerTypingAsync();
+            if (Program.twitterFeed.Validate(user))
+            {
+                if (Program.twitterFeed.Remove(user))
+                {
+                    await ctx.RespondAsync("Removed.");
+                }
+                else
+                {
+                    await ctx.RespondAsync("That feed is not available.");
+                }
+            }
+            else
+            {
+                await ctx.RespondAsync("That twitter user does not exist.");
             }
         }
 
