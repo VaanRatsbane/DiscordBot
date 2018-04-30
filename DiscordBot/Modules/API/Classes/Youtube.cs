@@ -56,7 +56,7 @@ namespace DiscordBot.Modules.API
         {
             var regex = new Regex(MATCH_EXP);
             var match = regex.Match(channelLink);
-            return (match.Success && match.Groups.Count == 1) ?
+            return (match.Success && match.Groups.Count == 2) ?
                 match.Groups[1].Value :
                 null;
         }
