@@ -53,7 +53,10 @@ namespace DiscordBot.Modules.API
         {
             var key = Program.keys.GetKey("twitterkey");
             var secret = Program.keys.GetKey("twittersecret");
+            var accesstoken = Program.keys.GetKey("twitteraccesstoken");
+            var accesstokensecret = Program.keys.GetKey("twitteraccesstokensecret");
             TwitterService service = new TwitterService(key, secret);
+            service.AuthenticateWith(accesstoken, accesstokensecret);
             var user = service.GetUserProfileFor(new GetUserProfileForOptions()
             {
                 ScreenName = accountName
@@ -118,14 +121,19 @@ namespace DiscordBot.Modules.API
             if(channel != null)
             {
                 var newCheck = DateTime.Now;
+
                 var key = Program.keys.GetKey("twitterkey");
                 var secret = Program.keys.GetKey("twittersecret");
+                var accesstoken = Program.keys.GetKey("twitteraccesstoken");
+                var accesstokensecret = Program.keys.GetKey("twitteraccesstokensecret");
+                TwitterService service = new TwitterService(key, secret);
+                service.AuthenticateWith(accesstoken, accesstokensecret);
+
                 var toPost = new List<DiscordEmbed>();
-                foreach(var feed in feeds)
+                foreach (var feed in feeds)
                 {
                     try
                     {
-                        TwitterService service = new TwitterService(key, secret);
                         IEnumerable<TwitterStatus> tweets;
 
                         
