@@ -158,9 +158,9 @@ namespace DiscordBot.Modules.API
                             }
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        Log.Warning("Youtube feed:\n" + e.ToString());
+                        Log.Warning("Youtube feed:\n" + ex.ToString());
                     }
                 }
                 client.Dispose();

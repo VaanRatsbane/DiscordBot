@@ -160,7 +160,7 @@ namespace DiscordBot.Modules.API
                                         embed = embed.WithDescription(tweet.Text);
                                     if (tweet.Entities.Media.Count > 0 && tweet.Entities.Media[0].MediaType == TwitterMediaType.Photo)
                                         embed = embed.WithImageUrl(tweet.Entities.Media[0].MediaUrl);
-                                    toPost.Add(embed);
+                                    toPost.Add(embed.Build());
                                 }
                             }
                             if(toPost.Count > 0)
@@ -174,9 +174,9 @@ namespace DiscordBot.Modules.API
                             }
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        Log.Warning("Tweet feed:\n" + e.ToString());
+                        Log.Warning("Tweet feed:\n" + ex.ToString());
                     }
                 }
                 lastCheck = newCheck;
