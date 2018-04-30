@@ -149,7 +149,7 @@ namespace DiscordBot.Modules.API
                         {
                             foreach(var tweet in tweets)
                             {
-                                if (tweet.CreatedDate <= lastCheck)
+                                if (tweet.CreatedDate >= lastCheck)
                                     break;
                                 else
                                 {
