@@ -40,7 +40,7 @@ namespace DiscordBot.Modules.API
                 feeds = new List<string>();
             }
 
-            lastCheck = DateTime.Now;
+            lastCheck = DateTime.UtcNow;
             feedTimer = new Timer();
             feedTimer.AutoReset = true;
             feedTimer.Elapsed += FeedTimer_Elapsed;
@@ -69,7 +69,7 @@ namespace DiscordBot.Modules.API
                 Save();
                 if (feeds.Count == 1)
                 {
-                    lastCheck = DateTime.Now;
+                    lastCheck = DateTime.UtcNow;
                     feedTimer.Start();
                 }
                 return true;
@@ -117,7 +117,7 @@ namespace DiscordBot.Modules.API
             var channel = guild.GetChannel(channelId);
             if(channel != null)
             {
-                var newCheck = DateTime.Now;
+                var newCheck = DateTime.UtcNow;
                 var key = Program.keys.GetKey("youtube");
                 var toPost = new List<DiscordEmbed>();
                 WebClient client = new WebClient();

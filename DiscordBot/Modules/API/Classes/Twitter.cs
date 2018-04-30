@@ -38,7 +38,7 @@ namespace DiscordBot.Modules.API
                 feeds = new List<string>();
             }
 
-            lastCheck = DateTime.Now;
+            lastCheck = DateTime.UtcNow;
             feedTimer = new Timer();
             feedTimer.AutoReset = true;
             feedTimer.Elapsed += FeedTimer_Elapsed;
@@ -72,7 +72,7 @@ namespace DiscordBot.Modules.API
                 Save();
                 if (feeds.Count == 1)
                 {
-                    lastCheck = DateTime.Now;
+                    lastCheck = DateTime.UtcNow;
                     feedTimer.Start();
                 }
                 return true;
@@ -115,12 +115,13 @@ namespace DiscordBot.Modules.API
 
         private async void FeedTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+
             var guild = await Program._discord.GetGuildAsync(ulong.Parse(Program.cfg.GetValue("guild")));
             var channelId = ulong.Parse(Program.cfg.GetValue("twitterchannel"));
             var channel = guild.GetChannel(channelId);
             if(channel != null)
             {
-                var newCheck = DateTime.Now;
+                var newCheck = DateTime.UtcNow;
 
                 var key = Program.keys.GetKey("twitterkey");
                 var secret = Program.keys.GetKey("twittersecret");
@@ -134,10 +135,7 @@ namespace DiscordBot.Modules.API
                 {
                     try
                     {
-                        IEnumerable<TwitterStatus> tweets;
-
-                        
-                        tweets = service.ListTweetsOnUserTimeline(new ListTweetsOnUserTimelineOptions
+                        var tweets = service.ListTweetsOnUserTimeline(new ListTweetsOnUserTimelineOptions
                         {
                             ScreenName = feed,
                             Count = 20,
@@ -153,13 +151,16 @@ namespace DiscordBot.Modules.API
                                     break;
                                 else
                                 {
-                                    toPost.Add(new DiscordEmbedBuilder()
+                                    var embed = new DiscordEmbedBuilder()
                                         .WithAuthor(tweet.Author.ScreenName, tweet.User.Url, tweet.Author.ProfileImageUrl)
                                         .WithColor(new DiscordColor(0x1da1f2))
                                         .WithUrl($"https://twitter.com/{tweet.User.Name}/status/{tweet.Id}")
-                                        .WithTimestamp(tweet.CreatedDate)
-                                        .WithDescription(tweet.Text)
-                                    );
+                                        .WithTimestamp(tweet.CreatedDate);
+                                    if (!String.IsNullOrEmpty(tweet.Text))
+                                        embed = embed.WithDescription(tweet.Text);
+                                    if (tweet.Entities.Media.Count > 0 && tweet.Entities.Media[0].MediaType == TwitterMediaType.Photo)
+                                        embed = embed.WithImageUrl(tweet.Entities.Media[0].MediaUrl);
+                                    toPost.Add(embed);
                                 }
                             }
                             if(toPost.Count > 0)
