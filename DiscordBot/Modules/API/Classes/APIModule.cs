@@ -199,39 +199,83 @@ namespace DiscordBot.Modules
             }
         }
 
-     //   [Command("tf2server"), Description("Information about the TF2 server.")]
-     //   public async Task Tf2Server(CommandContext ctx)
-     //   {
-     //       var tf2serveraddress = Program.cfg.GetValue("tf2serverip");
-     //       var tf2serverport = Program.cfg.GetValue("tf2serverport");
-     //       if (tf2serveraddress == null)
-     //       {
-     //           await ctx.RespondAsync("The server ip is not saved in the bot's memory, contact the owner.");
-     //       }
-     //       else
-     //       {
-     //           var gs = new GameServer(new IPEndPoint(IPAddress.Parse(tf2serveraddress), int.Parse(tf2serverport)));
-     //           DiscordEmbed embed = new DiscordEmbedBuilder()
-     //               .WithAuthor(gs.Name)
-     //               .WithDescription((gs.VACSecured ? "" : "Not ") + "VAC secured" + (gs.RequiresPassword ? " | Requires Password" : ""))
-     //               .WithColor(new DiscordColor("FF6600"))
-     //               .AddField("Map", gs.Map)
-     //               .AddField("Players", $"{gs.PlayerCount}/{gs.MaximumPlayerCount}")
-     //               .WithFooter($"{tf2serveraddress}:{tf2serverport}");
+        [Command("addyoutubefeed"), Description("Adds a channel to look out for."), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
+        public async Task AddYoutube(CommandContext ctx, string channel)
+        {
+            await ctx.TriggerTypingAsync();
+            string id = Program.youtubeFeed.Validate(channel);
+            if(id != null)
+            {
+                if(Program.youtubeFeed.Add(id))
+                {
+                    await ctx.RespondAsync("Added.");
+                }
+                else
+                {
+                    await ctx.RespondAsync("That feed has already been added.");
+                }
+            }
+            else
+            {
+                await ctx.RespondAsync("Use a url with the standard format.");
+            }
+        }
 
-     //           if(gs.Players != null && gs.Players.Count > 0)
-     //           {
-     //               List<PlayerInfo> players = gs.Players.OrderByDescending(o => o.Score).ToList();
-     //               string highscores = "";
-     //               for (int i = 0; i < players.Count && i < 3; i++)
-     //                   highscores += $"{i} - {players[i].Score} points | {players[i].Name}\n";
-     //               embed = new DiscordEmbedBuilder(embed).AddField("Top 3", highscores);
-					//Console.WriteLine(highscores);
-     //           }
+        [Command("removeyoutubefeed"), Description("Removes a channel from the list to look out for."), RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
+        public async Task RemoveYoutube(CommandContext ctx, string channel)
+        {
+            await ctx.TriggerTypingAsync();
+            string id = Program.youtubeFeed.Validate(channel);
+            if (id != null)
+            {
+                if (Program.youtubeFeed.Remove(id))
+                {
+                    await ctx.RespondAsync("Removed.");
+                }
+                else
+                {
+                    await ctx.RespondAsync("That feed is not available.");
+                }
+            }
+            else
+            {
+                await ctx.RespondAsync("Use a url with the standard format.");
+            }
+        }
 
-     //           await ctx.RespondAsync(embed: embed);
-     //       }
-     //   }
+        //   [Command("tf2server"), Description("Information about the TF2 server.")]
+        //   public async Task Tf2Server(CommandContext ctx)
+        //   {
+        //       var tf2serveraddress = Program.cfg.GetValue("tf2serverip");
+        //       var tf2serverport = Program.cfg.GetValue("tf2serverport");
+        //       if (tf2serveraddress == null)
+        //       {
+        //           await ctx.RespondAsync("The server ip is not saved in the bot's memory, contact the owner.");
+        //       }
+        //       else
+        //       {
+        //           var gs = new GameServer(new IPEndPoint(IPAddress.Parse(tf2serveraddress), int.Parse(tf2serverport)));
+        //           DiscordEmbed embed = new DiscordEmbedBuilder()
+        //               .WithAuthor(gs.Name)
+        //               .WithDescription((gs.VACSecured ? "" : "Not ") + "VAC secured" + (gs.RequiresPassword ? " | Requires Password" : ""))
+        //               .WithColor(new DiscordColor("FF6600"))
+        //               .AddField("Map", gs.Map)
+        //               .AddField("Players", $"{gs.PlayerCount}/{gs.MaximumPlayerCount}")
+        //               .WithFooter($"{tf2serveraddress}:{tf2serverport}");
+
+        //           if(gs.Players != null && gs.Players.Count > 0)
+        //           {
+        //               List<PlayerInfo> players = gs.Players.OrderByDescending(o => o.Score).ToList();
+        //               string highscores = "";
+        //               for (int i = 0; i < players.Count && i < 3; i++)
+        //                   highscores += $"{i} - {players[i].Score} points | {players[i].Name}\n";
+        //               embed = new DiscordEmbedBuilder(embed).AddField("Top 3", highscores);
+        //Console.WriteLine(highscores);
+        //           }
+
+        //           await ctx.RespondAsync(embed: embed);
+        //       }
+        //   }
 
     }
 }

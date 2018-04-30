@@ -1,4 +1,5 @@
 ﻿using DiscordBot.Modules;
+using DiscordBot.Modules.API;
 using DiscordBot.Modules.Classes;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -32,6 +33,7 @@ namespace DiscordBot
         public static Quotes quotes;
         public static CookieManager cookies;
         public static SchedulerManager scheduler;
+        public static YoutubeFeed youtubeFeed;
 
         public static Random rng;
 
@@ -269,6 +271,10 @@ namespace DiscordBot
             //Scheduler
             scheduler = new SchedulerManager();
             killables.Add(scheduler);
+
+            //Youtube
+            youtubeFeed = new YoutubeFeed();
+            killables.Add(youtubeFeed);
 
         }
 

@@ -52,7 +52,7 @@ namespace DiscordBot
                 "key, setkey, createkey, deletekey, listkeys, quit, enablemodule, disablemodule, listmodules")
                 .AddField("Chat", "savequote, randomquote, removequote, choose, 8ball, bspeak, echo, dab, cookie, cookies, dog, trbmb")
                 .AddField("Info", "about, status, server, uptime, time, currencies, convertcurrency, whois")
-                .AddField("API", "weather, ff, tf2, ow, mc, reddit")
+                .AddField("API", "weather, ff, tf2, ow, mc, reddit, addyoutubefeed, removeyoutubefeed")
                 .AddField("Math", "calc, graph, latex, rolldice, decvalues, octvalues, binvalues, hexvalues")
                 .AddField("Tools", "color, uncolor, listcolors, tinyurl, lmgtfy, togethertube")
                 .AddField("Scheduler", "remindme, listreminders, cancelreminder");
@@ -108,7 +108,7 @@ namespace DiscordBot
                 .WithColor(DiscordColor.Cyan)
                 .WithTitle("Commands to poll information from the internet.")
                 .WithDescription("Use !help < command > to learn more.")
-                .AddField("Commands", "weather, ff, tf2, ow, mc, reddit");
+                .AddField("Commands", "weather, ff, tf2, ow, mc, reddit, addyoutubefeed, removeyoutubefeed");
         }
 
         private static void BuildMath(string authorName, string authorIcon)
