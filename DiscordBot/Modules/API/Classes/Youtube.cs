@@ -132,7 +132,7 @@ namespace DiscordBot.Modules.API
                         {
                             foreach(var item in result.items)
                             {
-                                if (item.snippet.publishedAt >= lastCheck)
+                                if (item.snippet.publishedAt <= lastCheck)
                                     break;
                                 else if(item.id.kind == "youtube#video")
                                 {
