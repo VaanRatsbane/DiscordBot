@@ -40,7 +40,7 @@ namespace DiscordBot.Modules.API
 
             lastCheck = DateTime.Now;
             feedTimer = new Timer();
-            feedTimer.AutoReset = false;
+            feedTimer.AutoReset = true;
             feedTimer.Elapsed += FeedTimer_Elapsed;
             feedTimer.Interval = 300000;
             if (feeds.Count > 0)
