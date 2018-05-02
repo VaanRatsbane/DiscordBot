@@ -195,7 +195,7 @@ namespace DiscordBot.Modules.API
             }
         }
 
-        internal class Tweet : IComparable
+        internal class Tweet
         {
             public long id { get; private set; }
             public DateTime postedDate { get; private set; }
@@ -206,11 +206,6 @@ namespace DiscordBot.Modules.API
                 this.id = id;
                 this.postedDate = postedDate;
                 this.embed = embed;
-            }
-
-            public int CompareTo(object obj)
-            {
-                throw new NotImplementedException();
             }
         }
     }

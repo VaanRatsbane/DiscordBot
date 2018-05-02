@@ -2,9 +2,12 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -288,6 +291,56 @@ namespace DiscordBot.Modules
             {
                 Log.Warning(e.ToString());
             }
+        }
+
+        [Command("backup"), Description("Makes a backup of the whole server."), RequireOwner]
+        public async Task Backup(CommandContext ctx)
+        {
+            await ctx.TriggerTypingAsync();
+            var backup = new BackupObject()
+            {
+                channels = ctx.Guild.Channels,
+                name = ctx.Guild.Name,
+                regionId = ctx.Guild.RegionId,
+                roles = ctx.Guild.Roles
+            };
+
+            var members = ctx.Guild.Members;
+
+            Directory.CreateDirectory("Backup");
+            Directory.CreateDirectory("Backup/emojis");
+
+            using (var client = new WebClient())
+            {
+                foreach (var emoji in ctx.Guild.Emojis)
+                {
+                    var link = $"https://cdn.discordapp.com/emojis/{emoji.Id}.png?v=1";
+                    client.DownloadFile(link, $"Backup/emojis/{emoji.Name}.png");
+                }
+
+                client.DownloadFile(ctx.Guild.IconUrl, "Backup/icon.png");                
+            }
+
+            var backupJson = JsonConvert.SerializeObject(backup, Formatting.Indented);
+            File.WriteAllText("Backup/server.json", backupJson);
+            var membersJson = JsonConvert.SerializeObject(members, Formatting.Indented);
+            File.WriteAllText("Backup/members.json", membersJson);
+
+            ZipFile.CreateFromDirectory("Backup", "Backup.zip");
+            using (var fs = new FileStream("Backup.zip", FileMode.Open))
+            {
+                await ctx.RespondWithFileAsync(fs);
+            }
+            Directory.Delete("Backup", true);
+            File.Delete("Backup.zip");
+        }
+
+        internal sealed class BackupObject
+        {
+            public IReadOnlyList<DiscordChannel> channels;
+            public string name;
+            public string regionId;
+            public IReadOnlyList<DiscordRole> roles;
         }
 
     }
