@@ -125,7 +125,7 @@ namespace DiscordBot.Modules
             await ctx.RespondAsync(answer);
         }
 
-        [Command("bspeak"), Aliases("b"), Description("Speak like a true rudda.")]
+        [Command("bspeak"), Aliases("b"), Description("Speak like a true brudda.")]
         public async Task BSpeak(CommandContext ctx, [RemainingText]string text)
         {
             await ctx.Message.DeleteAsync();
@@ -198,9 +198,17 @@ namespace DiscordBot.Modules
         [Command("dab"), Description("Feels dab man.")]
         public async Task Dab(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
-            await ctx.Message.DeleteAsync();
-            await ctx.RespondAsync((await ctx.Guild.GetEmojiAsync(410860287852412928)).GetDiscordName());
+            try
+            {
+                await ctx.TriggerTypingAsync();
+                await ctx.Message.DeleteAsync();
+                var emoji = DiscordEmoji.FromGuildEmote(ctx.Client, 410860287852412928);
+                await ctx.RespondAsync(emoji);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
 
         [Command("cookie"), Description("Gives a cookie 🍪yum🍪")]
@@ -294,6 +302,7 @@ namespace DiscordBot.Modules
                 using (client = new WebClient())
                 {
                     string msg = client.DownloadString("http://api.chew.pro/trbmb").Replace("[\"", "").Replace("\"]", "");
+                    await ctx.Message.DeleteAsync();
                     await ctx.RespondAsync(msg);
                 }
             }

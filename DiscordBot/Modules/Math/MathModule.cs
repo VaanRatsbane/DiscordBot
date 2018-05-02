@@ -165,7 +165,7 @@ namespace DiscordBot.Modules
             }
             catch (Exception)
             {
-                await ctx.RespondAsync("That is not a valid binary number.");
+                await ctx.RespondAsync("That is not a valid hexadecimal number.");
             }
         }
 
@@ -190,7 +190,7 @@ namespace DiscordBot.Modules
             }
             catch (Exception)
             {
-                await ctx.RespondAsync("That is not a valid binary number.");
+                await ctx.RespondAsync("That is not a valid octal number.");
             }
         }
     }
