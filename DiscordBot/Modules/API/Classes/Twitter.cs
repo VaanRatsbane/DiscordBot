@@ -9,6 +9,7 @@ using System.Net;
 using DSharpPlus.Entities;
 using System.Threading.Tasks;
 using TweetSharp;
+using System.Linq;
 
 namespace DiscordBot.Modules.API
 {
@@ -130,7 +131,7 @@ namespace DiscordBot.Modules.API
                 TwitterService service = new TwitterService(key, secret);
                 service.AuthenticateWith(accesstoken, accesstokensecret);
 
-                var toPost = new Dictionary<long, DiscordEmbed>();
+                var toPost = new List<Tweet>();
                 foreach (var feed in feeds)
                 {
                     try
@@ -154,24 +155,23 @@ namespace DiscordBot.Modules.API
                                     var embed = new DiscordEmbedBuilder()
                                         .WithAuthor(tweet.Author.ScreenName, tweet.User.Url, tweet.Author.ProfileImageUrl)
                                         .WithColor(new DiscordColor(0x1da1f2))
-                                        .WithUrl($"https://twitter.com/{tweet.User.Name}/status/{tweet.Id}")
-                                        .WithTimestamp(tweet.CreatedDate);
-                                    if (!String.IsNullOrEmpty(tweet.Text))
-                                        embed = embed.WithDescription(tweet.Text);
+                                        .WithTimestamp(tweet.CreatedDate)
+                                        .WithDescription(tweet.Text);
                                     if (tweet.Entities.Media.Count > 0 && tweet.Entities.Media[0].MediaType == TwitterMediaType.Photo)
-                                        embed = embed.AddField("Media", tweet.Entities.Media[0].MediaUrl);
-                                    toPost.Add(tweet.Id, embed.Build());
+                                        embed = embed.WithImageUrl(tweet.Entities.Media[0].MediaUrl);
+                                    toPost.Add(new Tweet(tweet.Id, tweet.CreatedDate, embed.Build()));
                                 }
                             }
                             if(toPost.Count > 0)
                             {
                                 var posted = new List<long>();
+                                toPost.OrderBy(t => t.postedDate);
                                 foreach (var post in toPost)
                                 {
-                                    if (!posted.Contains(post.Key))
+                                    if (!posted.Contains(post.id))
                                     {
-                                        await channel.SendMessageAsync(embed: post.Value);
-                                        posted.Add(post.Key);
+                                        await channel.SendMessageAsync(embed: post.embed);
+                                        posted.Add(post.id);
                                     }
                                 }
                             }
@@ -191,5 +191,23 @@ namespace DiscordBot.Modules.API
             }
         }
 
+        internal class Tweet : IComparable
+        {
+            public long id { get; private set; }
+            public DateTime postedDate { get; private set; }
+            public DiscordEmbed embed { get; private set; }
+
+            public Tweet(long id, DateTime postedDate, DiscordEmbed embed)
+            {
+                this.id = id;
+                this.postedDate = postedDate;
+                this.embed = embed;
+            }
+
+            public int CompareTo(object obj)
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 }
