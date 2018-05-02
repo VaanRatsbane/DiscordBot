@@ -22,6 +22,8 @@ namespace DiscordBot.Modules.API
         private Timer feedTimer;
         private DateTime lastCheck;
 
+        private static List<long> alreadyPosted;
+
         public TwitterFeed()
         {
             if (!Directory.Exists("Files/API"))
@@ -40,6 +42,7 @@ namespace DiscordBot.Modules.API
             }
 
             lastCheck = DateTime.UtcNow;
+            alreadyPosted = new List<long>();
             feedTimer = new Timer();
             feedTimer.AutoReset = true;
             feedTimer.Elapsed += FeedTimer_Elapsed;
@@ -164,14 +167,13 @@ namespace DiscordBot.Modules.API
                             }
                             if(toPost.Count > 0)
                             {
-                                var posted = new List<long>();
                                 toPost.OrderBy(t => t.postedDate);
                                 foreach (var post in toPost)
                                 {
-                                    if (!posted.Contains(post.id))
+                                    if (!alreadyPosted.Contains(post.id))
                                     {
                                         await channel.SendMessageAsync(embed: post.embed);
-                                        posted.Add(post.id);
+                                        alreadyPosted.Add(post.id);
                                     }
                                 }
                             }
@@ -183,6 +185,8 @@ namespace DiscordBot.Modules.API
                     }
                 }
                 lastCheck = newCheck;
+                if (alreadyPosted.Count > 100)
+                    alreadyPosted = new List<long>();
             }
             else
             {

@@ -274,13 +274,19 @@ namespace DiscordBot.Modules
         [Command("wipe"), Description("Wipes a number of messages from the channel."), RequirePermissions(DSharpPlus.Permissions.ManageMessages)]
         public async Task Wipe(CommandContext ctx, int quantity = 100)
         {
-            await ctx.TriggerTypingAsync();
-            await ctx.Message.DeleteAsync();
-            var msgs = await ctx.Channel.GetMessagesAsync(quantity);
-            if (msgs.Count > 0)
+            try
             {
-                await ctx.Channel.DeleteMessagesAsync(msgs);
-                await ctx.RespondAsync("Wiped " + msgs.Count + " messages.");
+                await ctx.Message.DeleteAsync();
+                var msgs = await ctx.Channel.GetMessagesAsync(quantity);
+                if (msgs.Count > 0)
+                {
+                    await ctx.Channel.DeleteMessagesAsync(msgs);
+                    await ctx.RespondAsync("Wiped " + msgs.Count + " messages.");
+                }
+            }
+            catch(Exception e)
+            {
+                Log.Warning(e.ToString());
             }
         }
 
