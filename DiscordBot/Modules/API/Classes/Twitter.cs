@@ -130,7 +130,7 @@ namespace DiscordBot.Modules.API
                 TwitterService service = new TwitterService(key, secret);
                 service.AuthenticateWith(accesstoken, accesstokensecret);
 
-                var toPost = new List<DiscordEmbed>();
+                var toPost = new Dictionary<long, DiscordEmbed>();
                 foreach (var feed in feeds)
                 {
                     try
@@ -145,7 +145,7 @@ namespace DiscordBot.Modules.API
 
                         if(tweets != null)
                         {
-                            foreach(var tweet in tweets)
+                            foreach (var tweet in tweets)
                             {
                                 if (tweet.CreatedDate <= lastCheck)
                                     break;
@@ -159,17 +159,20 @@ namespace DiscordBot.Modules.API
                                     if (!String.IsNullOrEmpty(tweet.Text))
                                         embed = embed.WithDescription(tweet.Text);
                                     if (tweet.Entities.Media.Count > 0 && tweet.Entities.Media[0].MediaType == TwitterMediaType.Photo)
-                                        embed = embed.WithImageUrl(tweet.Entities.Media[0].MediaUrl);
-                                    toPost.Add(embed.Build());
+                                        embed = embed.AddField("Media", tweet.Entities.Media[0].MediaUrl);
+                                    toPost.Add(tweet.Id, embed.Build());
                                 }
                             }
                             if(toPost.Count > 0)
                             {
-                                toPost.Reverse();
+                                var posted = new List<long>();
                                 foreach (var post in toPost)
                                 {
-                                    await channel.SendMessageAsync(embed: post);
-                                    await Task.Delay(2000);
+                                    if (!posted.Contains(post.Key))
+                                    {
+                                        await channel.SendMessageAsync(embed: post.Value);
+                                        posted.Add(post.Key);
+                                    }
                                 }
                             }
                         }
@@ -183,9 +186,10 @@ namespace DiscordBot.Modules.API
             }
             else
             {
-                Log.Error("Couldn't get youtube channel. Stopping...");
+                Log.Error("Couldn't get twitter channel. Stopping...");
                 feedTimer.Stop();
             }
         }
+
     }
 }
