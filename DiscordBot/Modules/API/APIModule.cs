@@ -1,7 +1,5 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using Geocoding;
-using Geocoding.Google;
 using DarkSkyApi;
 using DarkSkyApi.Models;
 using System;
@@ -14,31 +12,40 @@ using DiscordBot.Modules.API.Classes;
 using Newtonsoft.Json;
 using System.Linq;
 using SourceQuery;
+using IDL.MapsApi.Net.Client;
+using IDL.MapsApi.Net.MapBox.Request;
+using IDL.MapsApi.Net;
+using IDL.MapsApi.Net.Models;
 
 namespace DiscordBot.Modules
 {
     class APIModule
-    {
+    {   
 
         [Command("weather"), Description("Gets weather info on a given location.")]
         public async Task Weather(CommandContext ctx, [RemainingText]string location)
         {
             await ctx.TriggerTypingAsync();
-            IGeocoder geocoder = new GoogleGeocoder() { ApiKey = Program.keys.GetKey("googlemaps") };
-            IEnumerable<Address> addresses = await geocoder.GeocodeAsync(location.ToLowerInvariant());
 
-            Address address = null;
-
-            foreach(var item in addresses)
+            IApiClient client = new ApiClient();
+            var request = new MapBoxForwardGeocodingRequest(Program.keys.GetKey("mapbox"))
             {
-                address = item;
+                Query = location
+            };
+            var response = (await client.GetAsync(request)).AsMapsApiGeocodingResult();
+
+            Location address = null;
+
+            foreach(var item in response.Results)
+            {
+                address = item.Location;
                 break;
             }
             
             if (address != null)
             {
                 var darksky = new DarkSkyService(Program.keys.GetKey("darksky"));
-                Forecast result = await darksky.GetWeatherDataAsync(address.Coordinates.Latitude, address.Coordinates.Longitude, Unit.SI);
+                Forecast result = await darksky.GetWeatherDataAsync(address.Latitude, address.Longitude, Unit.SI);
 
                 string url = Program.cfg.GetValue($"weather-{result.Currently.Icon.ToLowerInvariant()}");
                 if (url == null) { url = ""; Console.WriteLine("Oops"); };
@@ -61,9 +68,11 @@ namespace DiscordBot.Modules
                 else
                     colorCode = "0000ff";
 
+                var formattedLocation = $"{System.Math.Round(address.Latitude, 5)}, {System.Math.Round(address.Longitude, 5)}";
+
                 var embed = new DiscordEmbedBuilder()
                     .WithAuthor("Powered by Dark Sky", "https://darksky.net", "https://darksky.net/images/app/logo.png")
-                    .WithTitle($"Weather in {address.FormattedAddress}")
+                    .WithTitle($"Weather in {formattedLocation}")
                     .WithDescription(result.Currently.Summary)
                     .AddField("Temperature", result.Currently.Temperature.ToString() + " Celsius")
                     .AddField("Wind Speed", result.Currently.WindSpeed.ToString() + "Meters / second")

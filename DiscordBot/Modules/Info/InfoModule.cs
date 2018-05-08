@@ -74,7 +74,7 @@ namespace DiscordBot.Modules
                 .WithTitle(ctx.Guild.Name)
                 .WithDescription("Information about this server.")
                 .AddField("Created by", ctx.Guild.Owner.DisplayName)
-                .AddField("Created in", ctx.Guild.CreationTimestamp.ToString())
+                .AddField("Created in", $"{ctx.Guild.CreationTimestamp.UtcDateTime.ToString()} UTC")
                 .AddField("Region", ctx.Guild.RegionId)
                 .AddField("Users", ctx.Guild.MemberCount.ToString());
 
@@ -87,15 +87,15 @@ namespace DiscordBot.Modules
             try
             {
                 await ctx.TriggerTypingAsync();
-                var now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);
+                var now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
                 var embed = new DiscordEmbedBuilder()
                     .WithAuthor(ctx.Client.CurrentUser.GetFullIdentifier(), null, ctx.Client.CurrentUser.AvatarUrl)
                     .WithTitle("Times around the world")
                     .WithDescription("Times are in UTC format (no summer hours)")
-                    .AddField("UK / PT", (now + new TimeSpan(-1, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
-                    .AddField("USA East Coast", (now + new TimeSpan(-5, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
-                    .AddField("USA West Coast", (now + new TimeSpan(-8, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
-                    .AddField("Japan / South Korea", (now + new TimeSpan(+8, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true);
+                    .AddField("United Kingdom / Portugal", (now + new TimeSpan(+1, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
+                    .AddField("USA East Coast", (now + new TimeSpan(-4, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
+                    .AddField("USA West Coast", (now + new TimeSpan(-7, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true)
+                    .AddField("Japan / South Korea", (now + new TimeSpan(+9, 0, 0)).ToString("yyyy-MM-dd HH:mm:ss"), true);
                 await ctx.RespondAsync(embed: embed);
             } catch(Exception e) { Console.WriteLine(e.ToString()); };
         }
