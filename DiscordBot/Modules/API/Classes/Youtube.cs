@@ -121,11 +121,12 @@ namespace DiscordBot.Modules.API
                 var key = Program.keys.GetKey("youtube");
                 var toPost = new List<DiscordEmbed>();
                 WebClient client = new WebClient();
+                string url = "";
                 foreach(var feed in feeds)
                 {
                     try
                     {
-                        var url = YOUTUBE_CHANNEL_API.Replace("@KEY@", key).Replace("@CHANNELID@", feed);
+                        url = YOUTUBE_CHANNEL_API.Replace("@KEY@", key).Replace("@CHANNELID@", feed);
                         var json = client.DownloadString(url);
                         var result = JsonConvert.DeserializeObject<YoutubeChannelVideos.RootObject>(json);
                         if(result != null)
@@ -160,7 +161,8 @@ namespace DiscordBot.Modules.API
                     }
                     catch (Exception ex)
                     {
-                        Log.Warning("Youtube feed:\n" + ex.ToString());
+                        Log.Error("Exception at youtube feed.");
+                        Console.WriteLine($"Youtube feed at {url}:\n" + ex.ToString());
                     }
                 }
                 client.Dispose();
