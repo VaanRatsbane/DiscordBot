@@ -264,3 +264,4 @@ __pycache__/
 *.pyc
 *.xml
 /TweetTests
+/DiscordBot/Properties/PublishProfiles/FolderProfile.pubxml
